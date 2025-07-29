@@ -12,10 +12,10 @@ public:
     }
 
     virtual tsl::elm::Element* createUI() override {
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", APP_VERSION, true);
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor 性能监控", "葡萄糖酸菜鱼 汉化", true);
 
         auto Status = new tsl::elm::CustomDrawer([this](tsl::gfx::Renderer *renderer, u16 x, u16 y, u16 w, u16 h) {
-            renderer->drawString("Battery/Charger Stats:", false, 20, 120, 20, 0xFFFF);
+            renderer->drawString("电池与充电数据:", false, 20, 120, 20, 0xFFFF);
             renderer->drawString(Battery_c, false, 20, 155, 18, 0xFFFF);
         });
 
@@ -46,22 +46,20 @@ public:
 
         if (ChargerConnected)
             snprintf(Battery_c, sizeof Battery_c,
-                "Battery Actual Capacity: %.0f mAh\n"
-                "Battery Designed Capacity: %.0f mAh\n"
-                "Battery Temperature: %.1f\u00B0C\n"
-                "Battery Raw Charge: %.1f%%\n"
-                "Battery Age: %.1f%%\n"
-                "Battery Voltage (%ds AVG): %.0f mV\n"
-                "Battery Current Flow (%ss AVG): %+.0f mA\n"
-                "Battery Power Flow%s: %+.3f W\n"
-                "Battery Remaining Time: %s\n"
-                "Input Current Limt: %d mA\n"
-                "VBUS Current Limit: %d mA\n" 
-                "Charge Voltage Limit: %d mV\n"
-                "Charge Current Limit: %d mA\n"
-                "Charger Type: %u\n"
-                "Charger Max Voltage: %u mV\n"
-                "Charger Max Current: %u mA",
+                "电池实际容量: %.0f mAh\n"
+                "电池设计容量: %.0f mAh\n"
+                "电池温度: %.1f℃\n"
+                "真实电量: %.1f%%\n"
+                "电池寿命: %.1f%%\n"
+                "电压(%d秒平均值): %.0f mV\n"
+                "电流(%s秒平均值): %+.0f mA\n"
+                "电池功率%s: %+.3f W\n"
+                "剩余充电时间: %s\n"
+                "输入电流限制: %d mA\n"
+                "VBUS电流限制: %d mA\n" 
+                "充电模式: %u\n"
+                "最大充电电压: %u mV\n"
+                "最大充电电流: %u mA",
                 actualFullBatCapacity,
                 designedFullBatCapacity,
                 (float)_batteryChargeInfoFields.BatteryTemperature / 1000,
@@ -69,27 +67,25 @@ public:
                 (float)_batteryChargeInfoFields.BatteryAge / 1000,
                 batteryFiltered ? 45 : 5, batVoltageAvg,
                 batteryFiltered ? "11.25" : "5", batCurrentAvg,
-                batteryFiltered ? "" : " (5s AVG)", PowerConsumption, 
+                batteryFiltered ? "" : "(5秒平均值)", PowerConsumption, 
                 tempBatTimeEstimate,
                 _batteryChargeInfoFields.InputCurrentLimit,
                 _batteryChargeInfoFields.VBUSCurrentLimit,
-                _batteryChargeInfoFields.ChargeVoltageLimit,
-                _batteryChargeInfoFields.ChargeCurrentLimit,
                 ChargerConnected,
                 ChargerVoltageLimit,
                 ChargerCurrentLimit
             );
         else
             snprintf(Battery_c, sizeof Battery_c,
-                "Battery Actual Capacity: %.0f mAh\n"
-                "Battery Designed Capacity: %.0f mAh\n"
-                "Battery Temperature: %.1f\u00B0C\n"
-                "Battery Raw Charge: %.1f%%\n"
-                "Battery Age: %.1f%%\n"
-                "Battery Voltage (%ds AVG): %.0f mV\n"
-                "Battery Current Flow (%ss AVG): %+.0f mA\n"
-                "Battery Power Flow%s: %+.3f W\n"
-                "Battery Remaining Time: %s",
+                "电池实际容量: %.0f mAh\n"
+                "电池设计容量: %.0f mAh\n"
+                "电池温度: %.1f℃\n"
+                "真实电量: %.1f%%\n"
+                "电池寿命: %.1f%%\n"
+                "电压(%d秒平均值): %.0f mV\n"
+                "电流(%s秒平均值): %+.0f mA\n"
+                "电池功率%s: %+.3f W\n"
+                "电池剩余续航: %s",
                 actualFullBatCapacity,
                 designedFullBatCapacity,
                 (float)_batteryChargeInfoFields.BatteryTemperature / 1000,
@@ -97,7 +93,7 @@ public:
                 (float)_batteryChargeInfoFields.BatteryAge / 1000,
                 batteryFiltered ? 45 : 5, batVoltageAvg,
                 batteryFiltered ? "11.25" : "5", batCurrentAvg,
-                batteryFiltered ? "" : " (5s AVG)", PowerConsumption, 
+                batteryFiltered ? "" : "(5秒平均值)", PowerConsumption, 
                 tempBatTimeEstimate
             );
         mutexUnlock(&mutex_BatteryChecker);

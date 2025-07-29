@@ -25,10 +25,10 @@ public:
     GraphsMenu() {}
 
     virtual tsl::elm::Element* createUI() override {
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "FPS");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor 性能监控", "葡萄糖酸菜鱼 汉化");
         auto list = new tsl::elm::List();
 
-        auto comFPSGraph = new tsl::elm::ListItem("Graph");
+        auto comFPSGraph = new tsl::elm::ListItem("图表");
         comFPSGraph->setClickListener([](uint64_t keys) {
             if (keys & KEY_A) {
                 tsl::changeTo<com_FPSGraph>();
@@ -38,7 +38,7 @@ public:
         });
         list->addItem(comFPSGraph);
 
-        auto comFPSCounter = new tsl::elm::ListItem("Counter");
+        auto comFPSCounter = new tsl::elm::ListItem("数字");
         comFPSCounter->setClickListener([](uint64_t keys) {
             if (keys & KEY_A) {
                 tsl::changeTo<com_FPS>();
@@ -80,10 +80,10 @@ public:
     OtherMenu() { }
 
     virtual tsl::elm::Element* createUI() override {
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Other");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor 性能监控", "葡萄糖酸菜鱼 汉化");
         auto list = new tsl::elm::List();
 
-        auto Battery = new tsl::elm::ListItem("Battery/Charger");
+        auto Battery = new tsl::elm::ListItem("电池/充电");
         Battery->setClickListener([](uint64_t keys) {
             if (keys & KEY_A) {
                 tsl::changeTo<BatteryOverlay>();
@@ -93,7 +93,7 @@ public:
         });
         list->addItem(Battery);
 
-        auto Misc = new tsl::elm::ListItem("Miscellaneous");
+        auto Misc = new tsl::elm::ListItem("杂项");
         Misc->setClickListener([](uint64_t keys) {
             if (keys & KEY_A) {
                 tsl::changeTo<MiscOverlay>();
@@ -104,7 +104,7 @@ public:
         list->addItem(Misc);
 
         if (SaltySD) {
-            auto Res = new tsl::elm::ListItem("Game Resolutions");
+            auto Res = new tsl::elm::ListItem("游戏分辨率");
             Res->setClickListener([](uint64_t keys) {
                 if (keys & KEY_A) {
                     tsl::changeTo<ResolutionsOverlay>();
@@ -147,10 +147,10 @@ public:
     MainMenu() {}
 
     virtual tsl::elm::Element* createUI() override {
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", APP_VERSION);
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor 性能监控", "葡萄糖酸菜鱼 汉化");
         auto list = new tsl::elm::List();
         
-        auto Full = new tsl::elm::ListItem("Full");
+        auto Full = new tsl::elm::ListItem("完整(显示所有)");
         Full->setClickListener([](uint64_t keys) {
             if (keys & KEY_A) {
                 tsl::changeTo<FullOverlay>();
@@ -185,7 +185,7 @@ public:
             }
         }
         if (fileExist) {
-            auto Mini = new tsl::elm::ListItem("Mini");
+            auto Mini = new tsl::elm::ListItem("迷你(左上角)");
             Mini->setClickListener([](uint64_t keys) {
                 if (keys & KEY_A) {
                     tsl::setNextOverlay(filepath, "--miniOverlay");
@@ -196,7 +196,7 @@ public:
             });
             list->addItem(Mini);
 
-            auto Micro = new tsl::elm::ListItem("Micro");
+            auto Micro = new tsl::elm::ListItem("微型(顶部)");
             Micro->setClickListener([](uint64_t keys) {
                 if (keys & KEY_A) {
                     tsl::setNextOverlay(filepath, "--microOverlay");
@@ -208,7 +208,7 @@ public:
             list->addItem(Micro);
         }
         if (SaltySD) {
-            auto Graphs = new tsl::elm::ListItem("FPS");
+            auto Graphs = new tsl::elm::ListItem("帧率");
             Graphs->setClickListener([](uint64_t keys) {
                 if (keys & KEY_A) {
                     tsl::changeTo<GraphsMenu>();
@@ -218,7 +218,7 @@ public:
             });
             list->addItem(Graphs);
         }
-        auto Other = new tsl::elm::ListItem("Other");
+        auto Other = new tsl::elm::ListItem("其他");
         Other->setClickListener([](uint64_t keys) {
             if (keys & KEY_A) {
                 tsl::changeTo<OtherMenu>();

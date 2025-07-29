@@ -64,7 +64,7 @@ public:
     uint8_t resolutionLookup = 0;
 
     virtual tsl::elm::Element* createUI() override {
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", APP_VERSION, true);
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor 性能监控", "葡萄糖酸菜鱼 汉化", true);
 
         auto Status = new tsl::elm::CustomDrawer([this](tsl::gfx::Renderer *renderer, u16 x, u16 y, u16 w, u16 h) {
             
@@ -72,7 +72,7 @@ public:
             ///CPU
             uint32_t height_offset = 162;
 
-            renderer->drawString("CPU Usage:", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
+            renderer->drawString("CPU :", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
             renderer->drawString(CPU_Hz_c, false, COMMON_MARGIN, height_offset - 15, 15, 0xFFFF);
             renderer->drawString(RealCPU_Hz_c, false, COMMON_MARGIN, height_offset, 15, 0xFFFF);
             renderer->drawString(CPU_compressed_c, false, COMMON_MARGIN, height_offset + 15, 15, 0xFFFF);
@@ -80,7 +80,7 @@ public:
             ///GPU
             height_offset = 252;
 
-            renderer->drawString("GPU Usage:", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
+            renderer->drawString("GPU :", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
             renderer->drawString(GPU_Hz_c, false, COMMON_MARGIN, height_offset - 15, 15, 0xFFFF);
             renderer->drawString(RealGPU_Hz_c, false, COMMON_MARGIN, height_offset, 15, 0xFFFF);
             renderer->drawString(GPU_Load_c, false, COMMON_MARGIN, height_offset + 15, 15, 0xFFFF);
@@ -88,23 +88,23 @@ public:
             ///RAM
             height_offset = 342;
 
-            renderer->drawString("RAM Usage:", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
+            renderer->drawString("内存 :", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
             renderer->drawString(RAM_Hz_c, false, COMMON_MARGIN, height_offset - 15, 15, 0xFFFF);
             renderer->drawString(RealRAM_Hz_c, false, COMMON_MARGIN, height_offset, 15, 0xFFFF);
             renderer->drawString(RAM_load_c, false, COMMON_MARGIN, height_offset + 15, 15, 0xFFFF);
     
             if (R_SUCCEEDED(Hinted)) {
-                static auto dimensions = renderer->drawString("Total: \nApplication: \nApplet: \nSystem: \nSystem Unsafe: ", false, 0, height_offset + 40, 15, 0x0000);
-                renderer->drawString("Total: \nApplication: \nApplet: \nSystem: \nSystem Unsafe: ", false, COMMON_MARGIN, height_offset + 40, 15, 0xFFFF);
+                static auto dimensions = renderer->drawString("总计: \n游戏/应用: \n小程序: \n系统: \n系统(不安全): ", false, 0, height_offset + 40, 15, 0x0000);
+                renderer->drawString("总计: \n游戏/应用: \n小程序: \n系统: \n系统(不安全): ", false, COMMON_MARGIN, height_offset + 40, 15, 0xFFFF);
                 renderer->drawString(RAM_var_compressed_c, false, COMMON_MARGIN + dimensions.first, height_offset + 40, 15, 0xFFFF);
             }
             
             ///Thermal
             height_offset = 522;
 
-            renderer->drawString("Thermal:", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
-            static auto dimensions1 = renderer->drawString("Temperatures: ", false, 0, height_offset - 15, 15, 0x0000);
-            renderer->drawString("Temperatures:", false, COMMON_MARGIN, height_offset - 15, 15, 0xFFFF);
+            renderer->drawString("温度:", false, COMMON_MARGIN, height_offset - 42, 20, 0xFFFF);
+            static auto dimensions1 = renderer->drawString("温度: ", false, 0, height_offset - 15, 15, 0x0000);
+            renderer->drawString("温度:", false, COMMON_MARGIN, height_offset - 15, 15, 0xFFFF);
             renderer->drawString(SoCPCB_temperature_c, false, COMMON_MARGIN + dimensions1.first, height_offset - 15, 15, 0xFFFF);
             
             renderer->drawString(Rotation_SpeedLevel_c, false, COMMON_MARGIN, height_offset, 15, 0xFFFF);
@@ -114,7 +114,7 @@ public:
             ///FPS
             height_offset = 605;
 
-            renderer->drawString("Game:", false, COMMON_MARGIN, height_offset - 47, 20, 0xFFFF);
+            renderer->drawString("游戏:", false, COMMON_MARGIN, height_offset - 47, 20, 0xFFFF);
             renderer->drawString(FPS_var_compressed_c, false, COMMON_MARGIN, height_offset - 20, 15, 0xFFFF);
         
             renderer->drawString(Resolutions_c, false, COMMON_MARGIN, height_offset, 15, 0xFFFF);
@@ -131,24 +131,24 @@ public:
     virtual void update() override {
         //Make stuff ready to print
         ///CPU
-        snprintf(CPU_compressed_c, sizeof(CPU_compressed_c), "Load #0: %.2f%%#1: %.2f%%#2: %.2f%%#3: %.2f%%", 
+        snprintf(CPU_compressed_c, sizeof(CPU_compressed_c), "游戏核心: %.2f%% | %.2f%% | %.2f%%    系统核心: %.2f%%\n", 
             (idletick0 > systemtickfrequency_impl) ? 0.0f : (1.d - ((double)idletick0 / systemtickfrequency_impl)) * 100,
             (idletick1 > systemtickfrequency_impl) ? 0.0f : (1.d - ((double)idletick1 / systemtickfrequency_impl)) * 100,
             (idletick2 > systemtickfrequency_impl) ? 0.0f : (1.d - ((double)idletick2 / systemtickfrequency_impl)) * 100,
             (idletick3 > systemtickfrequency_impl) ? 0.0f : (1.d - ((double)idletick3 / systemtickfrequency_impl)) * 100);
 
         mutexLock(&mutex_Misc);
-        snprintf(CPU_Hz_c, sizeof(CPU_Hz_c), "Target Frequency: %u.%u MHz", CPU_Hz / 1000000, (CPU_Hz / 100000) % 10);
-        snprintf(RealCPU_Hz_c, sizeof(RealCPU_Hz_c), "Real Frequency:     %u.%u MHz", realCPU_Hz / 1000000, (realCPU_Hz / 100000) % 10);
+        snprintf(CPU_Hz_c, sizeof(CPU_Hz_c), "目标频率:     %u.%u MHz", CPU_Hz / 1000000, (CPU_Hz / 100000) % 10);
+        snprintf(RealCPU_Hz_c, sizeof(RealCPU_Hz_c), "真实频率:     %u.%u MHz", realCPU_Hz / 1000000, (realCPU_Hz / 100000) % 10);
 
         ///GPU
-        snprintf(GPU_Hz_c, sizeof GPU_Hz_c, "Target Frequency: %u.%u MHz", GPU_Hz / 1000000, (GPU_Hz / 100000) % 10);
-        snprintf(RealGPU_Hz_c, sizeof(RealGPU_Hz_c), "Real Frequency:     %u.%u MHz", realGPU_Hz / 1000000, (realGPU_Hz / 100000) % 10);
-        snprintf(GPU_Load_c, sizeof GPU_Load_c, "Load: %u.%u%%", GPU_Load_u / 10, GPU_Load_u % 10);
+        snprintf(GPU_Hz_c, sizeof GPU_Hz_c, "目标频率:     %u.%u MHz", GPU_Hz / 1000000, (GPU_Hz / 100000) % 10);
+        snprintf(RealGPU_Hz_c, sizeof(RealGPU_Hz_c), "真实频率:     %u.%u MHz", realGPU_Hz / 1000000, (realGPU_Hz / 100000) % 10);
+        snprintf(GPU_Load_c, sizeof GPU_Load_c, "使用率:         %u.%u%%", GPU_Load_u / 10, GPU_Load_u % 10);
         
         ///RAM
-        snprintf(RAM_Hz_c, sizeof RAM_Hz_c, "Target Frequency: %u.%u MHz", RAM_Hz / 1000000, (RAM_Hz / 100000) % 10);
-        snprintf(RealRAM_Hz_c, sizeof(RealRAM_Hz_c), "Real Frequency:     %u.%u MHz", realRAM_Hz / 1000000, (realRAM_Hz / 100000) % 10);
+        snprintf(RAM_Hz_c, sizeof RAM_Hz_c, "目标频率:     %u.%u MHz", RAM_Hz / 1000000, (RAM_Hz / 100000) % 10);
+        snprintf(RealRAM_Hz_c, sizeof(RealRAM_Hz_c), "真实频率:     %u.%u MHz", realRAM_Hz / 1000000, (realRAM_Hz / 100000) % 10);
         
         float RAM_Total_application_f = (float)RAM_Total_application_u / 1024 / 1024;
         float RAM_Total_applet_f = (float)RAM_Total_applet_u / 1024 / 1024;
@@ -169,19 +169,19 @@ public:
         
         int RAM_GPU_Load = ramLoad[SysClkRamLoad_All] - ramLoad[SysClkRamLoad_Cpu];
         snprintf(RAM_load_c, sizeof RAM_load_c, 
-            "Load: %u.%u%% (CPU %u.%uGPU %u.%u)",
+            "使用率:         %u.%u%%  (CPU %u.%u%%|GPU %u.%u%%)",
             ramLoad[SysClkRamLoad_All] / 10, ramLoad[SysClkRamLoad_All] % 10,
             ramLoad[SysClkRamLoad_Cpu] / 10, ramLoad[SysClkRamLoad_Cpu] % 10,
             RAM_GPU_Load / 10, RAM_GPU_Load % 10);
         
         ///Thermal
         snprintf(SoCPCB_temperature_c, sizeof SoCPCB_temperature_c, 
-            "SOC %2.1f\u00B0CPCB %2.1f\u00B0CSkin %2d.%d\u00B0C", 
+            "           核心:%2.1f℃ | 主板:%2.1f℃ | 壳温:%2d.%d℃", 
             SOC_temperatureF, PCB_temperatureF, skin_temperaturemiliC / 1000, (skin_temperaturemiliC / 100) % 10);
-        snprintf(Rotation_SpeedLevel_c, sizeof Rotation_SpeedLevel_c, "Fan Rotation Level: %2.1f%%", Rotation_Duty);
+        snprintf(Rotation_SpeedLevel_c, sizeof Rotation_SpeedLevel_c, "风扇转速:     %2.1f%%", Rotation_Duty);
         
         ///FPS
-        snprintf(FPS_var_compressed_c, sizeof FPS_var_compressed_c, "PFPS: %u  FPS: %2.1f", FPS, FPSavg);
+        snprintf(FPS_var_compressed_c, sizeof FPS_var_compressed_c, "推送帧率: %u  实际帧率(平均): %2.1f", FPS, FPSavg);
 
         //Resolutions
         if ((settings.showRES == true) && GameRunning && NxFps) {
@@ -247,8 +247,8 @@ public:
                 }
                 qsort(m_resolutionOutput, 8, sizeof(resolutionCalls), compare);
                 if (!m_resolutionOutput[1].width)
-                    snprintf(Resolutions_c, sizeof(Resolutions_c), "%dx%d", m_resolutionOutput[0].width, m_resolutionOutput[0].height);
-                else snprintf(Resolutions_c, sizeof(Resolutions_c), "%dx%d%dx%d", m_resolutionOutput[0].width, m_resolutionOutput[0].height, m_resolutionOutput[1].width, m_resolutionOutput[1].height);
+                    snprintf(Resolutions_c, sizeof(Resolutions_c), "分辨率: %dx%d", m_resolutionOutput[0].width, m_resolutionOutput[0].height);
+                else snprintf(Resolutions_c, sizeof(Resolutions_c), "分辨率: %dx%d | %dx%d", m_resolutionOutput[0].width, m_resolutionOutput[0].height, m_resolutionOutput[1].width, m_resolutionOutput[1].height);
             }
         }
         else if (!GameRunning && resolutionLookup != 0) {
@@ -264,7 +264,7 @@ public:
             snprintf(remainingBatteryLife, sizeof remainingBatteryLife, "%d:%02d", batTimeEstimate / 60, batTimeEstimate % 60);
         }
         else snprintf(remainingBatteryLife, sizeof remainingBatteryLife, "--:--");
-        snprintf(BatteryDraw_c, sizeof BatteryDraw_c, "Battery Power Flow: %+.2fW[%s]", PowerConsumption, remainingBatteryLife);
+        snprintf(BatteryDraw_c, sizeof BatteryDraw_c, "功率: %+.2fW[%s]", PowerConsumption, remainingBatteryLife);
         mutexUnlock(&mutex_BatteryChecker);
 
         static bool skipOnce = true;
