@@ -157,7 +157,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Alpha");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "Alpha");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -179,31 +179,31 @@ public:
 // Define available DTC format options
 static const std::vector<std::pair<std::string, std::string>> dtcFormats = {
     // Special
-    {"Pretty", "%a, %b %d"+ult::DIVIDER_SYMBOL+"%I:%M %p"},
-    {"Compact", "%Y%m%d"+ult::DIVIDER_SYMBOL+"%H:%M:%S"},
-    {"FileSafe", "%Y-%m-%d"+ult::DIVIDER_SYMBOL+"%H-%M-%S"},
-    {"Day+Time", "%a"+ult::DIVIDER_SYMBOL+"%H:%M"},
+    {"美观", "%a, %b %d"+ult::DIVIDER_SYMBOL+"%I:%M %p"},
+    {"紧凑", "%Y%m%d"+ult::DIVIDER_SYMBOL+"%H:%M:%S"},
+    {"完整", "%Y-%m-%d"+ult::DIVIDER_SYMBOL+"%H-%M-%S"},
+    {"日期+时间", "%a"+ult::DIVIDER_SYMBOL+"%H:%M"},
 
     // Datetime (default included here)
-    {"Date+Time(s)", "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%H:%M:%S"},           // default
-    {"Date+Time AM/PM", "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%I:%M %p"},
-    {"Date+Time(s) AM/PM", "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%I:%M:%S %p"},
-    {"Date+Time EU", "%d/%m/%Y"+ult::DIVIDER_SYMBOL+"%H:%M"},
-    {"Date+Time EU AM/PM", "%d/%m/%Y"+ult::DIVIDER_SYMBOL+"%I:%M %p"},
-    {"Date+Time(s) EU AM/PM", "%d/%m/%Y"+ult::DIVIDER_SYMBOL+"%I:%M:%S %p"},
-    {"Date+Time ISO", "%Y-%m-%dT"+ult::DIVIDER_SYMBOL+"%H:%M:%S"},
+    {"日期+时间(s)", "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%H:%M:%S"},           // default
+    {"日期+时间 12小时制", "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%I:%M %p"},
+    {"日期+时间(s) 12小时制", "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%I:%M:%S %p"},
+    {"日期+时间 EU", "%d/%m/%Y"+ult::DIVIDER_SYMBOL+"%H:%M"},
+    {"日期+时间 EU 12小时制", "%d/%m/%Y"+ult::DIVIDER_SYMBOL+"%I:%M %p"},
+    {"日期+时间(s) EU 12小时制", "%d/%m/%Y"+ult::DIVIDER_SYMBOL+"%I:%M:%S %p"},
+    {"日期+时间 ISO", "%Y-%m-%dT"+ult::DIVIDER_SYMBOL+"%H:%M:%S"},
 
     // Time only
-    {"Time 24h", "%H:%M"},
-    {"Time AM/PM", "%I:%M %p"},
-    {"Time(s) 24h", "%H:%M:%S"},
-    {"Time(s) AM/PM", "%I:%M:%S %p"},
+    {"时间 24小时制", "%H:%M"},
+    {"时间 12小时制", "%I:%M %p"},
+    {"时间(s) 24小时制", "%H:%M:%S"},
+    {"时间(s) 12小时制", "%I:%M:%S %p"},
 
     // Date only
-    {"Date US", "%m-%d-%Y"},
-    {"Date EU", "%d/%m/%Y"},
-    {"Date ISO", "%Y-%m-%d"},
-    {"Date Short", "%m/%d/%y"}
+    {"日期 US", "%m-%d-%Y"},
+    {"日期 EU", "%d/%m/%Y"},
+    {"日期 ISO", "%Y-%m-%d"},
+    {"日期 简短", "%m/%d/%y"}
 };
 
 // DTC Format Configuration (Mini/Micro only)
@@ -224,7 +224,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("DTC Format"));
+        list->addItem(new tsl::elm::CategoryHeader("时间显示格式"));
 
         const std::string section = isMiniMode ? "mini" : "micro";
         std::string currentValue = ult::parseValueFromIniSection(configIniPath, section, "dtc_format");
@@ -260,7 +260,7 @@ public:
         // Jump to currently selected item
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "DTC Format");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "时间显示");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -301,7 +301,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("Toggles"));
+        list->addItem(new tsl::elm::CategoryHeader("切换显示"));
         
         if (isFPSGraphMode) {
             // FPS Graph: show_info and disable_screenshots
@@ -311,7 +311,7 @@ public:
             });
             list->addItem(showInfo);
 
-            auto* disableScreenshots = new tsl::elm::ToggleListItem("Disable Screenshots", getCurrentDisableScreenshots("fps-graph"));
+            auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots("fps-graph"));
             disableScreenshots->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "fps-graph", "disable_screenshots", state ? "true" : "false");
             });
@@ -319,43 +319,43 @@ public:
             
         } else if (isFullMode) {
             // Full mode: specific full toggles
-            auto* realFreqs = new tsl::elm::ToggleListItem("Show Real Freqs", getCurrentShowRealFreqs());
+            auto* realFreqs = new tsl::elm::ToggleListItem("显示实际频率", getCurrentShowRealFreqs());
             realFreqs->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_real_freqs", state ? "true" : "false");
             });
             list->addItem(realFreqs);
             
-            auto* showDeltas = new tsl::elm::ToggleListItem("Show Deltas", getCurrentShowDeltas());
+            auto* showDeltas = new tsl::elm::ToggleListItem("显示频率差异", getCurrentShowDeltas());
             showDeltas->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_deltas", state ? "true" : "false");
             });
             list->addItem(showDeltas);
             
-            auto* targetFreqs = new tsl::elm::ToggleListItem("Show Target Freqs", getCurrentShowTargetFreqs());
+            auto* targetFreqs = new tsl::elm::ToggleListItem("显示目标频率", getCurrentShowTargetFreqs());
             targetFreqs->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_target_freqs", state ? "true" : "false");
             });
             list->addItem(targetFreqs);
             
-            auto* showFPS = new tsl::elm::ToggleListItem("Show FPS", getCurrentShowFPS());
+            auto* showFPS = new tsl::elm::ToggleListItem("显示帧率", getCurrentShowFPS());
             showFPS->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_fps", state ? "true" : "false");
             });
             list->addItem(showFPS);
             
-            auto* showRES = new tsl::elm::ToggleListItem("Show RES", getCurrentShowRES());
+            auto* showRES = new tsl::elm::ToggleListItem("显示分辨率", getCurrentShowRES());
             showRES->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_res", state ? "true" : "false");
             });
             list->addItem(showRES);
             
-            auto* showRDSD = new tsl::elm::ToggleListItem("Show Read Speed", getCurrentShowRDSD());
+            auto* showRDSD = new tsl::elm::ToggleListItem("显示读取速度", getCurrentShowRDSD());
             showRDSD->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_read_speed", state ? "true" : "false");
             });
             list->addItem(showRDSD);
 
-            auto* disableScreenshots = new tsl::elm::ToggleListItem("Disable Screenshots", getCurrentDisableScreenshots("full"));
+            auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots("full"));
             disableScreenshots->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "disable_screenshots", state ? "true" : "false");
             });
@@ -365,49 +365,49 @@ public:
             // Mini/Micro modes: shared toggles
             const std::string section = isMiniMode ? "mini" : "micro";
             
-            auto* realFreqs = new tsl::elm::ToggleListItem("Real Frequencies", getCurrentRealFreqs());
+            auto* realFreqs = new tsl::elm::ToggleListItem("实际频率", getCurrentRealFreqs());
             realFreqs->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "real_freqs", state ? "true" : "false");
             });
             list->addItem(realFreqs);
             
-            auto* realVolts = new tsl::elm::ToggleListItem("Real Voltages", getCurrentRealVolts());
+            auto* realVolts = new tsl::elm::ToggleListItem("实际电压", getCurrentRealVolts());
             realVolts->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "real_volts", state ? "true" : "false");
             });
             list->addItem(realVolts);
             
-            auto* showFullCPU = new tsl::elm::ToggleListItem("Show Full CPU", getCurrentShowFullCPU());
+            auto* showFullCPU = new tsl::elm::ToggleListItem("显示完整CPU", getCurrentShowFullCPU());
             showFullCPU->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "show_full_cpu", state ? "true" : "false");
             });
             list->addItem(showFullCPU);
             
-            auto* showFullRes = new tsl::elm::ToggleListItem("Show Full Resolution", getCurrentShowFullRes());
+            auto* showFullRes = new tsl::elm::ToggleListItem("显示完整分辨率", getCurrentShowFullRes());
             showFullRes->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "show_full_res", state ? "true" : "false");
             });
             list->addItem(showFullRes);
             
-            auto* socVoltage = new tsl::elm::ToggleListItem("Show SOC Voltage", getCurrentShowSOCVoltage());
+            auto* socVoltage = new tsl::elm::ToggleListItem("显示核心电压", getCurrentShowSOCVoltage());
             socVoltage->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "show_soc_voltage", state ? "true" : "false");
             });
             list->addItem(socVoltage);
             
-            auto* dtcSymbol = new tsl::elm::ToggleListItem("Use DTC Symbol", getCurrentUseDTCSymbol());
+            auto* dtcSymbol = new tsl::elm::ToggleListItem("使用时间符号", getCurrentUseDTCSymbol());
             dtcSymbol->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "use_dtc_symbol", state ? "true" : "false");
             });
             list->addItem(dtcSymbol);
 
-            auto* dynamicColors = new tsl::elm::ToggleListItem("Use Dynamic Colors", getCurrentUseDynamicColors());
+            auto* dynamicColors = new tsl::elm::ToggleListItem("使用动态颜色", getCurrentUseDynamicColors());
             dynamicColors->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "use_dynamic_colors", state ? "true" : "false");
             });
             list->addItem(dynamicColors);
 
-            auto* disableScreenshots = new tsl::elm::ToggleListItem("Disable Screenshots", getCurrentDisableScreenshots(section));
+            auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots(section));
             disableScreenshots->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "disable_screenshots", state ? "true" : "false");
             });
@@ -415,7 +415,7 @@ public:
             
         } else if (isGameResolutionsMode) {
             // Game Resolutions mode: only disable_screenshots
-            auto* disableScreenshots = new tsl::elm::ToggleListItem("Disable Screenshots", getCurrentDisableScreenshots("game_resolutions"));
+            auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots("game_resolutions"));
             disableScreenshots->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "game_resolutions", "disable_screenshots", state ? "true" : "false");
             });
@@ -423,7 +423,7 @@ public:
             
         } else if (isFPSCounterMode) {
             // FPS Counter mode: only disable_screenshots
-            auto* disableScreenshots = new tsl::elm::ToggleListItem("Disable Screenshots", getCurrentDisableScreenshots("fps-counter"));
+            auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots("fps-counter"));
             disableScreenshots->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "fps-counter", "disable_screenshots", state ? "true" : "false");
             });
@@ -437,7 +437,7 @@ public:
             jumpItemExactMatch = false;
         }
 
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -606,7 +606,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("Refresh Rate"));
+        list->addItem(new tsl::elm::CategoryHeader("刷新频率"));
 
         static const std::vector<int> rates = {1, 2, 3, 5, 10, 15, 30, 60};
         for (int rate : rates) {
@@ -639,7 +639,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
 
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -700,7 +700,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
 
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -786,7 +786,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Font Sizes");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "字体大小");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -821,7 +821,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("Font Sizes"));
+        list->addItem(new tsl::elm::CategoryHeader("字体大小"));
         
         std::string section;
         if (isMiniMode) section = "mini";
@@ -835,7 +835,7 @@ public:
         const int handheldSize = handheldValue.empty() ? defaultSize : atoi(handheldValue.c_str());
         const int dockedSize = dockedValue.empty() ? defaultSize : atoi(dockedValue.c_str());
         
-        auto* handheldItem = new tsl::elm::ListItem("Handheld Font Size");
+        auto* handheldItem = new tsl::elm::ListItem("掌机模式字体大小");
         handheldItem->setValue(std::to_string(handheldSize) + " pt");
         handheldItem->setClickListener([this](uint64_t keys) {
             if (keys & KEY_A) {
@@ -846,7 +846,7 @@ public:
         });
         list->addItem(handheldItem);
         
-        auto* dockedItem = new tsl::elm::ListItem("Docked Font Size");
+        auto* dockedItem = new tsl::elm::ListItem("底座模式字体大小");
         dockedItem->setValue(std::to_string(dockedSize) + " pt");
         dockedItem->setClickListener([this](uint64_t keys) {
             if (keys & KEY_A) {
@@ -857,7 +857,7 @@ public:
         });
         list->addItem(dockedItem);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
         rootFrame->setContent(list);
         list->jumpToItem(jumpItemName, jumpItemValue, jumpItemExactMatch);
         {
@@ -1067,7 +1067,7 @@ public:
         }
         list->jumpToItem("", _jumpItemValue, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Colors");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "颜色");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -1114,7 +1114,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("Colors"));
+        list->addItem(new tsl::elm::CategoryHeader("颜色"));
         
         auto getCurrentColor = [this](const std::string& key, const std::string& def) {
             std::string section;
@@ -1419,7 +1419,7 @@ public:
             jumpItemExactMatch = false;
         }
     
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -1450,7 +1450,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("Elements " + ult::DIVIDER_SYMBOL + " \uE0E3 Move Up " + ult::DIVIDER_SYMBOL + " \uE0E2 Move Down"));
+        list->addItem(new tsl::elm::CategoryHeader("显示项目 " + ult::DIVIDER_SYMBOL + " \uE0E3 上移 " + ult::DIVIDER_SYMBOL + " \uE0E2 下移"));
 
         const std::string section = isMiniMode ? "mini" : "micro";
         std::string showValue = ult::parseValueFromIniSection(configIniPath, section, "show");
@@ -1491,6 +1491,20 @@ public:
         
         static const std::vector<std::string> allElements = {"DTC", "BAT", "CPU", "GPU", "RAM", "TMP", "FPS", "RES", "SOC", "READ"};
         
+        // 定义元素的中文显示名称
+        static const std::map<std::string, std::string> elementDisplayNames = {
+            {"DTC", "时间"},
+            {"BAT", "电池"},
+            {"CPU", "CPU"},
+            {"GPU", "GPU"},
+            {"RAM", "内存"},
+            {"TMP", "温度"},
+            {"FPS", "帧率"},
+            {"RES", "分辨率"},
+            {"SOC", "核心温度"},
+            {"READ", "读取速度"}
+        };
+        
         for (const std::string& element : allElements) {
             if (std::find(elementOrder.begin(), elementOrder.end(), element) == elementOrder.end()) {
                 elementOrder.push_back(element);
@@ -1501,10 +1515,17 @@ public:
             const std::string& element = elementOrder[i];
             const bool isEnabled = enabledElements.find(element) != enabledElements.end();
             
-            auto* elementItem = new tsl::elm::ListItem(element);
+            // 使用中文显示名称
+            std::string displayName = element;
+            auto it = elementDisplayNames.find(element);
+            if (it != elementDisplayNames.end()) {
+                displayName = it->second;
+            }
+            
+            auto* elementItem = new tsl::elm::ListItem(displayName);
             elementItem->setValue(isEnabled ? "On" : "Off", !isEnabled ? true : false);
             
-            elementItem->setClickListener([this, elementItem, element](uint64_t keys) {
+            elementItem->setClickListener([this, elementItem, element, displayName](uint64_t keys) {
                 static bool hasNotTriggeredAnimation = false;
 
                 if (hasNotTriggeredAnimation) {
@@ -1522,7 +1543,7 @@ public:
                     }
                     
                     updateShowAndOrder();
-                    jumpItemName = element;
+                    jumpItemName = displayName;  // 使用显示名称而不是元素标识符
                     jumpItemValue = "";
                     jumpItemExactMatch = true;
                     hasNotTriggeredAnimation = true;
@@ -1562,7 +1583,7 @@ public:
                     }
                     
                     updateShowAndOrder();
-                    jumpItemName = element;
+                    jumpItemName = displayName;  // 使用显示名称而不是元素标识符
                     jumpItemValue = "";
                     jumpItemExactMatch = true;
                     
@@ -1582,7 +1603,7 @@ public:
             jumpItemExactMatch = false;
         }
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -1647,11 +1668,11 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("Configuration"));
+        list->addItem(new tsl::elm::CategoryHeader("设置"));
         
         // 5. Elements (Mini/Micro only)
         if (isMiniMode || isMicroMode) {
-            auto* showSettings = new tsl::elm::ListItem("Elements");
+            auto* showSettings = new tsl::elm::ListItem("显示项目");
             showSettings->setValue(ult::DROPDOWN_SYMBOL);
             showSettings->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
@@ -1665,7 +1686,7 @@ public:
 
         // 3. Toggles (All modes)
         //if (isMiniMode || isMicroMode || isFullMode || isFPSGraphMode) {
-        auto* toggles = new tsl::elm::ListItem("Toggles");
+        auto* toggles = new tsl::elm::ListItem("切换显示");
         toggles->setValue(ult::DROPDOWN_SYMBOL);
         toggles->setClickListener([this](uint64_t keys) {
             if (keys & KEY_A) {
@@ -1679,7 +1700,7 @@ public:
 
         // 2. Colors (not Full mode - it has no color settings)
         if (!isFullMode) {
-            auto* colors = new tsl::elm::ListItem("Colors");
+            auto* colors = new tsl::elm::ListItem("颜色");
             colors->setValue(ult::DROPDOWN_SYMBOL);
             colors->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
@@ -1694,7 +1715,7 @@ public:
         
         // 4. Font Sizes (Mini/Micro/FPS Counter only)
         if (isMiniMode || isMicroMode || isFPSCounterMode) {
-            auto* fontSizes = new tsl::elm::ListItem("Font Sizes");
+            auto* fontSizes = new tsl::elm::ListItem("字体大小");
             fontSizes->setValue(ult::DROPDOWN_SYMBOL);
             fontSizes->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
@@ -1707,7 +1728,7 @@ public:
         }
         
         // 1. Refresh Rate (all modes)
-        auto* refreshRate = new tsl::elm::ListItem("Refresh Rate");
+        auto* refreshRate = new tsl::elm::ListItem("刷新频率");
         refreshRate->setValue(std::to_string(getCurrentRefreshRate()) + " Hz");
         refreshRate->setClickListener([this](uint64_t keys) {
             if (keys & KEY_A) {
@@ -1720,7 +1741,7 @@ public:
         
         // 6. DTC Format (Mini/Micro only) - NEW ADDITION
         if (isMiniMode || isMicroMode) {
-            auto* dtcFormat = new tsl::elm::ListItem("DTC Format");
+            auto* dtcFormat = new tsl::elm::ListItem("时间显示");
             dtcFormat->setValue(getCurrentDTCFormat());
             dtcFormat->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
@@ -1733,8 +1754,9 @@ public:
         }
 
         // 7. Frame Padding (Mini only) - NEW ADDITION
+        /* 
         if (isMiniMode) {
-            auto* framePadding = new tsl::elm::ListItem("Frame Padding");
+            auto* framePadding = new tsl::elm::ListItem("边框间距");
             framePadding->setValue(std::to_string(getCurrentFramePadding()) + " px");
             framePadding->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
@@ -1745,16 +1767,21 @@ public:
             });
             list->addItem(framePadding);
         }
+            */
         
         // 7. Mode-specific positioning settings
         if (isMicroMode) {
             // Text Alignment for Micro
-            auto* textAlign = new tsl::elm::ListItem("Text Alignment");
-            textAlign->setValue(getCurrentTextAlign());
+            auto* textAlign = new tsl::elm::ListItem("文本对齐");
+            textAlign->setValue(getCurrentTextAlignDisplay());
             textAlign->setClickListener([this, textAlign](uint64_t keys) {
                 if (keys & KEY_A) {
                     const std::string next = cycleTextAlign();
-                    textAlign->setValue(next);
+                    // 更新显示值为中文
+                    if (next == "Left") textAlign->setValue("左侧");
+                    else if (next == "Center") textAlign->setValue("居中");
+                    else if (next == "Right") textAlign->setValue("右侧");
+                    else textAlign->setValue(next);
                     return true;
                 }
                 return false;
@@ -1762,12 +1789,16 @@ public:
             list->addItem(textAlign);
 
             // Vertical Position for Micro (Top/Bottom only)
-            auto* layerPos = new tsl::elm::ListItem("Vertical Position");
-            layerPos->setValue(getCurrentLayerPosBottom());
+            auto* layerPos = new tsl::elm::ListItem("位置");
+            layerPos->setValue(getCurrentLayerPosBottomDisplay());
             layerPos->setClickListener([this, layerPos](uint64_t keys) {
                 if (keys & KEY_A) {
                     const std::string next = cycleLayerPosBottom();
-                    layerPos->setValue(next);
+                    // 更新显示值为中文
+                    if (next == "Top") layerPos->setValue("顶部");
+                    else if (next == "Center") layerPos->setValue("居中");
+                    else if (next == "Bottom") layerPos->setValue("底部");
+                    else layerPos->setValue(next);
                     return true;
                 }
                 return false;
@@ -1776,12 +1807,16 @@ public:
             
         } else if (isFullMode) {
             // Horizontal Position for Full (Left/Right only)
-            auto* layerPos = new tsl::elm::ListItem("Horizontal Position");
-            layerPos->setValue(getCurrentLayerPosRight());
+            auto* layerPos = new tsl::elm::ListItem("位置");
+            layerPos->setValue(getCurrentLayerPosRightDisplay());
             layerPos->setClickListener([this, layerPos](uint64_t keys) {
                 if (keys & KEY_A) {
                     const std::string next = cycleLayerPosRight();
-                    layerPos->setValue(next);
+                    // 更新显示值为中文
+                    if (next == "Left") layerPos->setValue("左侧");
+                    else if (next == "Center") layerPos->setValue("居中");
+                    else if (next == "Right") layerPos->setValue("右侧");
+                    else layerPos->setValue(next);
                     return true;
                 }
                 return false;
@@ -1790,24 +1825,32 @@ public:
             
         } else if (isGameResolutionsMode || isFPSCounterMode || isFPSGraphMode) {
             // Both horizontal and vertical positioning
-            auto* layerPosH = new tsl::elm::ListItem("Horizontal Position");
-            layerPosH->setValue(getCurrentLayerPosRight());
+            auto* layerPosH = new tsl::elm::ListItem("水平位置");
+            layerPosH->setValue(getCurrentLayerPosRightDisplay());
             layerPosH->setClickListener([this, layerPosH](uint64_t keys) {
                 if (keys & KEY_A) {
                     const std::string next = cycleLayerPosRight();
-                    layerPosH->setValue(next);
+                    // 更新显示值为中文
+                    if (next == "Left") layerPosH->setValue("左侧");
+                    else if (next == "Center") layerPosH->setValue("居中");
+                    else if (next == "Right") layerPosH->setValue("右侧");
+                    else layerPosH->setValue(next);
                     return true;
                 }
                 return false;
             });
             list->addItem(layerPosH);
             
-            auto* layerPosV = new tsl::elm::ListItem("Vertical Position");
-            layerPosV->setValue(getCurrentLayerPosBottom());
+            auto* layerPosV = new tsl::elm::ListItem("垂直位置");
+            layerPosV->setValue(getCurrentLayerPosBottomDisplay());
             layerPosV->setClickListener([this, layerPosV](uint64_t keys) {
                 if (keys & KEY_A) {
                     const std::string next = cycleLayerPosBottom();
-                    layerPosV->setValue(next);
+                    // 更新显示值为中文
+                    if (next == "Top") layerPosV->setValue("顶部");
+                    else if (next == "Center") layerPosV->setValue("居中");
+                    else if (next == "Bottom") layerPosV->setValue("底部");
+                    else layerPosV->setValue(next);
                     return true;
                 }
                 return false;
@@ -1822,7 +1865,7 @@ public:
             jumpItemExactMatch = false;
         }
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", modeName);
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", modeName);
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -1941,6 +1984,33 @@ private:
             if (value == "CENTER") return "Center";
             return "Top";
         }
+    }
+    
+    // 添加中文显示函数
+    std::string getCurrentLayerPosRightDisplay() {
+        const std::string value = getCurrentLayerPosRight();
+        if (value == "Left") return "左侧";
+        if (value == "Right") return "右侧";
+        if (value == "Center") return "居中";
+        return value;
+    }
+    
+    // 添加中文显示函数
+    std::string getCurrentLayerPosBottomDisplay() {
+        const std::string value = getCurrentLayerPosBottom();
+        if (value == "Top") return "顶部";
+        if (value == "Bottom") return "底部";
+        if (value == "Center") return "居中";
+        return value;
+    }
+    
+    // 添加文本对齐的中文显示函数
+    std::string getCurrentTextAlignDisplay() {
+        const std::string value = getCurrentTextAlign();
+        if (value == "Left") return "左侧";
+        if (value == "Right") return "右侧";
+        if (value == "Center") return "居中";
+        return value;
     }
     
     std::string cycleTextAlign() {
