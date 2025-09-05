@@ -115,7 +115,7 @@ public:
         
         // Alpha options
         static const std::vector<std::pair<std::string, char>> alphaOptions = {
-            {"Transparent", '0'},
+            {"透明", '0'},
             {"10%", '1'},
             {"20%", '3'},
             {"30%", '4'},
@@ -125,7 +125,7 @@ public:
             {"70%", 'B'},
             {"80%", 'C'},
             {"90%", 'E'},
-            {"Opaque", 'F'}
+            {"不透明", 'F'}
         };
         
         for (const auto& option : alphaOptions) {
@@ -938,54 +938,54 @@ public:
         // Updated colors list with comprehensive color palette
         static const std::vector<std::pair<std::string, std::string>> colors = {
             // Grays & Basics
-            {"Black", "#000F"},
-            {"Dark Gray", "#333F"},
-            {"Gray", "#444F"},
-            {"Light Gray", "#888F"},
-            {"Silver", "#CCCF"},
-            {"White", "#FFFF"},
-            
+            {"黑色", "#000F"},
+            {"深灰", "#333F"},
+            {"灰色", "#444F"},
+            {"浅灰", "#888F"},
+            {"银色", "#CCCF"},
+            {"白色", "#FFFF"},
+
             // Reds
-            {"Dark Red", "#800F"},
-            {"Red", "#F00F"},
-            {"Light Red", "#F88F"},
-            {"Pink", "#F8AF"},
-            
+            {"深红", "#800F"},
+            {"红色", "#F00F"},
+            {"浅红", "#F88F"},
+            {"粉色", "#F8AF"},
+
             // Greens
-            {"Dark Green", "#080F"},
-            {"Green", "#0F0F"},
-            {"Lime Green", "#0C0F"},
-            {"Light Green", "#8F8F"},
-            
+            {"深绿", "#080F"},
+            {"绿色", "#0F0F"},
+            {"柠檬绿", "#0C0F"},
+            {"浅绿", "#8F8F"},
+
             // Blues
-            {"Dark Blue", "#003F"},
-            {"Blue", "#00FF"},
-            {"Light Blue", "#2DFF"},
-            {"Sky Blue", "#8CFF"},
-            
+            {"深蓝", "#003F"},
+            {"蓝色", "#00FF"},
+            {"浅蓝", "#2DFF"},
+            {"天蓝", "#8CFF"},
+
             // Purples
-            {"Dark Purple", "#808F"},
-            {"Purple", "#80FF"},
-            {"Light Purple", "#C8FF"},
-            {"Violet", "#A0FF"},
-            
+            {"深紫", "#808F"},
+            {"紫色", "#80FF"},
+            {"浅紫", "#C8FF"},
+            {"紫色", "#A0FF"},
+
             // Yellows & Oranges
-            {"Orange", "#F80F"},
-            {"Yellow", "#FF0F"},
-            {"Light Yellow", "#FFCF"},
-            
+            {"橙色", "#F80F"},
+            {"黄色", "#FF0F"},
+            {"浅黄", "#FFCF"},
+
             // Cyans & Teals
-            {"Teal", "#088F"},
-            {"Cyan", "#0FFF"},
-            {"Light Cyan", "#8FFF"},
-            
+            {"水鸭色", "#088F"},
+            {"青色", "#0FFF"},
+            {"浅青", "#8FFF"},
+
             // Magentas & Pinks
-            {"Magenta", "#F0FF"},
-            {"Hot Pink", "#F8CF"},
-            
+            {"洋红", "#F0FF"},
+            {"亮粉", "#F8CF"},
+
             // Browns
-            {"Brown", "#840F"},
-            {"Light Brown", "#A86F"}
+            {"棕色", "#840F"},
+            {"浅棕", "#A86F"}
         };
         
         std::string _jumpItemValue;
@@ -1114,7 +1114,7 @@ public:
     
     virtual tsl::elm::Element* createUI() override {
         auto* list = new tsl::elm::List();
-        list->addItem(new tsl::elm::CategoryHeader("颜色"));
+        list->addItem(new tsl::elm::CategoryHeader("颜色设置"));
         
         auto getCurrentColor = [this](const std::string& key, const std::string& def) {
             std::string section;
@@ -1139,54 +1139,54 @@ public:
             // Map of hex colors to names (RGB only, no alpha)
             static const std::map<std::string, std::string> colorNames = {
                 // Grays & Basics
-                {"#000", "Black"},
-                {"#333", "Dark Gray"},
-                {"#444", "Gray"},
-                {"#888", "Light Gray"},
-                {"#CCC", "Silver"},
-                {"#FFF", "White"},
+                {"#000", "黑色"},
+                {"#333", "深灰"},
+                {"#444", "灰色"},
+                {"#888", "浅灰"},
+                {"#CCC", "银色"},
+                {"#FFF", "白色"},
                 
                 // Reds
-                {"#800", "Dark Red"},
-                {"#F00", "Red"},
-                {"#F88", "Light Red"},
-                {"#F8A", "Pink"},
+                {"#800", "深红"},
+                {"#F00", "红色"},
+                {"#F88", "浅红"},
+                {"#F8A", "粉色"},
                 
                 // Greens
-                {"#080", "Dark Green"},
-                {"#0F0", "Green"},
-                {"#0C0", "Lime Green"},
-                {"#8F8", "Light Green"},
+                {"#080", "深绿"},
+                {"#0F0", "绿色"},
+                {"#0C0", "柠檬绿"},
+                {"#8F8", "浅绿"},
                 
                 // Blues
-                {"#003", "Dark Blue"},
-                {"#00F", "Blue"},
-                {"#2DF", "Light Blue"},
-                {"#8CF", "Sky Blue"},
+                {"#003", "深蓝"},
+                {"#00F", "蓝色"},
+                {"#2DF", "浅蓝"},
+                {"#8CF", "天蓝"},
                 
                 // Purples
-                {"#808", "Dark Purple"},
-                {"#80F", "Purple"},
-                {"#C8F", "Light Purple"},
-                {"#A0F", "Violet"},
+                {"#808", "深紫"},
+                {"#80F", "紫色"},
+                {"#C8F", "浅紫"},
+                {"#A0F", "紫罗兰"},
                 
                 // Yellows & Oranges
-                {"#F80", "Orange"},
-                {"#FF0", "Yellow"},
-                {"#FFC", "Light Yellow"},
+                {"#F80", "橙色"},
+                {"#FF0", "黄色"},
+                {"#FFC", "浅黄"},
                 
                 // Cyans & Teals
-                {"#088", "Teal"},
-                {"#0FF", "Cyan"},
-                {"#8FF", "Light Cyan"},
+                {"#088", "水鸭色"},
+                {"#0FF", "青色"},
+                {"#8FF", "浅青"},
                 
                 // Magentas & Pinks
-                {"#F0F", "Magenta"},
-                {"#F8C", "Hot Pink"},
+                {"#F0F", "洋红"},
+                {"#F8C", "亮粉"},
                 
                 // Browns
-                {"#840", "Brown"},
-                {"#A86", "Light Brown"}
+                {"#840", "棕色"},
+                {"#A86", "浅棕"}
             };
             
             auto it = colorNames.find(rgb);
@@ -1194,8 +1194,8 @@ public:
                 // Special case for black/transparent disambiguation
                 if (rgb == "#000" && hexColor.length() == 5) {
                     char alpha = hexColor[4];
-                    if (alpha == '0') return "Transparent";
-                    else return "Black";
+                    if (alpha == '0') return "透明";
+                    else return "黑色";
                 }
                 return it->second;
             }
@@ -1224,14 +1224,14 @@ public:
         };
         
         // Background Color (all modes)
-        auto* bgColor = new tsl::elm::ListItem("Background Color");
+        auto* bgColor = new tsl::elm::ListItem("背景颜色");
         std::string bgDefault = "#0009";
         std::string bgCurrentColor = getCurrentColor("background_color", bgDefault);
         // Display color name instead of hex
         bgColor->setValue(getColorName(bgCurrentColor));
         bgColor->setClickListener([this, bgDefault](uint64_t keys) {
             if (keys & KEY_A) {
-                tsl::changeTo<ColorSelector>(modeName, "Background Color", "background_color", bgDefault);
+                tsl::changeTo<ColorSelector>(modeName, "背景颜色", "background_color", bgDefault);
                 return true;
             }
             return false;
@@ -1239,11 +1239,11 @@ public:
         list->addItem(bgColor);
         
         // Background Alpha (new)
-        auto* bgAlpha = new tsl::elm::ListItem("Background Alpha");
+        auto* bgAlpha = new tsl::elm::ListItem("背景透明度");
         bgAlpha->setValue(getAlphaPercentage(bgCurrentColor));
         bgAlpha->setClickListener([this](uint64_t keys) {
             if (keys & KEY_A) {
-                tsl::changeTo<AlphaSelector>(modeName, "background_color", "Background Alpha");
+                tsl::changeTo<AlphaSelector>(modeName, "background_color", "背景透明度");
                 return true;
             }
             return false;
@@ -1252,12 +1252,12 @@ public:
     
         if (isMiniMode) {
             // Mini mode: has focus background
-            auto* focusBgColor = new tsl::elm::ListItem("Focus Color");
+            auto* focusBgColor = new tsl::elm::ListItem("焦点颜色");
             std::string focusCurrentColor = getCurrentColor("focus_background_color", "#000F");
             focusBgColor->setValue(getColorName(focusCurrentColor));
             focusBgColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "Focus Color", "focus_background_color", "#000F");
+                    tsl::changeTo<ColorSelector>(modeName, "焦点颜色", "focus_background_color", "#000F");
                     return true;
                 }
                 return false;
@@ -1265,11 +1265,11 @@ public:
             list->addItem(focusBgColor);
             
             // Focus Alpha (new)
-            auto* focusAlpha = new tsl::elm::ListItem("Focus Alpha");
+            auto* focusAlpha = new tsl::elm::ListItem("焦点透明度");
             focusAlpha->setValue(getAlphaPercentage(focusCurrentColor));
             focusAlpha->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<AlphaSelector>(modeName, "focus_background_color", "Focus Alpha");
+                    tsl::changeTo<AlphaSelector>(modeName, "focus_background_color", "焦点透明度");
                     return true;
                 }
                 return false;
@@ -1278,13 +1278,13 @@ public:
         }
         
         // Text Color (all modes)
-        auto* textColor = new tsl::elm::ListItem("Text Color");
+        auto* textColor = new tsl::elm::ListItem("文本颜色");
         std::string textCurrentColor = getCurrentColor("text_color", "#FFFF");
         // Display color name for text colors
         textColor->setValue(getColorName(textCurrentColor));
         textColor->setClickListener([this](uint64_t keys) {
             if (keys & KEY_A) {
-                tsl::changeTo<ColorSelector>(modeName, "Text Color", "text_color", "#FFFF");
+                tsl::changeTo<ColorSelector>(modeName, "文本颜色", "text_color", "#FFFF");
                 return true;
             }
             return false;
@@ -1301,18 +1301,18 @@ public:
             };
             
             static const std::vector<ColorSetting> fpsGraphColors = {
-                {"FPS Counter", "fps_counter_color", "#4444", true},      // background type
-                {"Border", "border_color", "#F00F", false},               // text type
-                {"Dashed Line", "dashed_line_color", "#8888", true},      // background type
-                {"Max FPS Text", "max_fps_text_color", "#FFFF", false},   // text type
-                {"Min FPS Text", "min_fps_text_color", "#FFFF", false},   // text type
-                {"Main Line", "main_line_color", "#FFFF", false},         // text type
-                {"Rounded Line", "rounded_line_color", "#F0FF", false},   // text type
-                {"Perfect Line", "perfect_line_color", "#0C0F", false}    // text type
+                {"FPS计数器", "fps_counter_color", "#4444", true},      // background type
+                {"边框", "border_color", "#F00F", false},               // text type
+                {"虚线", "dashed_line_color", "#8888", true},          // background type
+                {"最大FPS文本", "max_fps_text_color", "#FFFF", false}, // text type
+                {"最小FPS文本", "min_fps_text_color", "#FFFF", false}, // text type
+                {"主线", "main_line_color", "#FFFF", false},           // text type
+                {"圆角线", "rounded_line_color", "#F0FF", false},      // text type
+                {"完美线", "perfect_line_color", "#0C0F", false}       // text type
             };
             
             for (const auto& color : fpsGraphColors) {
-                auto* colorItem = new tsl::elm::ListItem(color.name + " Color");
+                auto* colorItem = new tsl::elm::ListItem(color.name + "颜色");
                 std::string currentVal = getCurrentColor(color.key, color.defaultVal);
                 
                 if (color.isBackgroundType) {
@@ -1334,11 +1334,11 @@ public:
                 
                 // Add alpha selector for background-type colors
                 if (color.isBackgroundType) {
-                    auto* alphaItem = new tsl::elm::ListItem(color.name + " Alpha");
+                    auto* alphaItem = new tsl::elm::ListItem(color.name + "透明度");
                     alphaItem->setValue(getAlphaPercentage(currentVal));
                     alphaItem->setClickListener([this, color](uint64_t keys) {
                         if (keys & KEY_A) {
-                            tsl::changeTo<AlphaSelector>(modeName, color.key, color.name + " Alpha");
+                            tsl::changeTo<AlphaSelector>(modeName, color.key, color.name + "透明度");
                             return true;
                         }
                         return false;
@@ -1347,24 +1347,24 @@ public:
                 }
             }
         } else if (isMiniMode) {
-            auto* catColor = new tsl::elm::ListItem("Category Color");
+            auto* catColor = new tsl::elm::ListItem("类别颜色");
             // Display color name for category colors
             catColor->setValue(getColorName(getCurrentColor("cat_color", "#2DFF")));
             catColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "Category Color", "cat_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "类别颜色", "cat_color", "#2DFF");
                     return true;
                 }
                 return false;
             });
             list->addItem(catColor);
     
-            auto* sepColor = new tsl::elm::ListItem("Separator Color");
+            auto* sepColor = new tsl::elm::ListItem("分隔符颜色");
             // Display color name for separator colors
             sepColor->setValue(getColorName(getCurrentColor("separator_color", "#2DFF")));
             sepColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "Separator Color", "separator_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#2DFF");
                     return true;
                 }
                 return false;
@@ -1372,11 +1372,11 @@ public:
             list->addItem(sepColor);
             
         } else if (isMicroMode) {
-            auto* catColor = new tsl::elm::ListItem("Category Color");
+            auto* catColor = new tsl::elm::ListItem("类别颜色");
             catColor->setValue(getColorName(getCurrentColor("cat_color", "#2DFF")));
             catColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "Category Color", "cat_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "类别颜色", "cat_color", "#2DFF");
                     return true;
                 }
                 return false;
@@ -1384,11 +1384,11 @@ public:
             list->addItem(catColor);
             
             // Micro mode: separator and category colors (no focus background like Mini)
-            auto* sepColor = new tsl::elm::ListItem("Separator Color");
+            auto* sepColor = new tsl::elm::ListItem("分隔符颜色");
             sepColor->setValue(getColorName(getCurrentColor("separator_color", "#2DFF")));
             sepColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "Separator Color", "separator_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#2DFF");
                     return true;
                 }
                 return false;
@@ -1397,12 +1397,11 @@ public:
             
             
         } else if (isGameResolutionsMode) {
-            // Game Resolutions: only category color (no separator)
-            auto* catColor = new tsl::elm::ListItem("Category Color");
+            auto* catColor = new tsl::elm::ListItem("类别颜色");
             catColor->setValue(getColorName(getCurrentColor("cat_color", "#FFFF")));
             catColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "Category Color", "cat_color", "#FFFF");
+                    tsl::changeTo<ColorSelector>(modeName, "类别颜色", "cat_color", "#FFFF");
                     return true;
                 }
                 return false;
@@ -1411,15 +1410,15 @@ public:
         }
         // FPS Counter mode: only background and text colors (already added above)
         // Full mode: NO color settings at all (excluded from this function)
-        
+
         list->jumpToItem(jumpItemName, jumpItemValue, jumpItemExactMatch);
         {
             jumpItemName = "";
             jumpItemValue = "";
             jumpItemExactMatch = false;
         }
-    
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "设置");
+
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("性能监控", "颜色设置");
         rootFrame->setContent(list);
         return rootFrame;
     }

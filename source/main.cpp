@@ -126,7 +126,7 @@ public:
         //    list->addItem(Res);
         //}
 
-        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("性能监控", "");
+        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("性能监控", APP_VERSION);
         rootFrame->setContent(list);
 
         return rootFrame;
