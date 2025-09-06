@@ -1031,25 +1031,25 @@ void ParseIniFile() {
     }
 
     // Handle external combo - load each file once
-    //const struct { const char* path; const char* section; } externalConfigs[] = {
-    //    {ultrahandConfigIniPath, "ultrahand"},
-    //    {teslaConfigIniPath, "tesla"}
-    //};
-    //
-    //for (const auto& config : externalConfigs) {
-    //    auto extConfigData = ult::getParsedDataFromIniFile(config.path);
-    //    auto sectionIt = extConfigData.find(config.section);
-    //    
-    //    if (sectionIt != extConfigData.end()) {
-    //        auto keyComboIt = sectionIt->second.find("key_combo");
-    //        if (keyComboIt != sectionIt->second.end() && !keyComboIt->second.empty()) {
-    //            keyCombo = keyComboIt->second;
-    //            removeSpaces(keyCombo);
-    //            convertToUpper(keyCombo);
-    //            break;
-    //        }
-    //    }
-    //}
+    const struct { const char* path; const char* section; } externalConfigs[] = {
+       {ultrahandConfigIniPath, "ultrahand"},
+       {teslaConfigIniPath, "tesla"}
+    };
+    
+    for (const auto& config : externalConfigs) {
+       auto extConfigData = ult::getParsedDataFromIniFile(config.path);
+       auto sectionIt = extConfigData.find(config.section);
+       
+       if (sectionIt != extConfigData.end()) {
+           auto keyComboIt = sectionIt->second.find("key_combo");
+           if (keyComboIt != sectionIt->second.end() && !keyComboIt->second.empty()) {
+               keyCombo = keyComboIt->second;
+               removeSpaces(keyCombo);
+               convertToUpper(keyCombo);
+               break;
+           }
+       }
+    }
     
     //comboBitmask = MapButtons(keyCombo);
 }
