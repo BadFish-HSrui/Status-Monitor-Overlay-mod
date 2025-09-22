@@ -383,6 +383,18 @@ public:
             });
             list->addItem(showFullCPU);
             
+            auto* showVDDQ = new tsl::elm::ToggleListItem("显示VDDQ电压", getCurrentShowVDDQ());
+            showVDDQ->setStateChangedListener([this, section](bool state) {
+                ult::setIniFileValue(configIniPath, section, "show_vddq", state ? "true" : "false");
+            });
+            list->addItem(showVDDQ);
+
+            auto* showVDD2 = new tsl::elm::ToggleListItem("显示VDD2电压", getCurrentShowVDD2());
+            showVDD2->setStateChangedListener([this, section](bool state) {
+                ult::setIniFileValue(configIniPath, section, "show_vdd2", state ? "true" : "false");
+            });
+            list->addItem(showVDD2);
+
             auto* showFullRes = new tsl::elm::ToggleListItem("显示完整分辨率", getCurrentShowFullRes());
             showFullRes->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "show_full_res", state ? "true" : "false");
@@ -412,6 +424,12 @@ public:
                 ult::setIniFileValue(configIniPath, section, "disable_screenshots", state ? "true" : "false");
             });
             list->addItem(disableScreenshots);
+
+            auto* sleepExit = new tsl::elm::ToggleListItem("Sleep Exit", getCurrentSleepExit(section));
+            sleepExit->setStateChangedListener([this, section](bool state) {
+                ult::setIniFileValue(configIniPath, section, "sleep_exit", state ? "true" : "false");
+            });
+            list->addItem(sleepExit);
             
         } else if (isGameResolutionsMode) {
             // Game Resolutions mode: only disable_screenshots
@@ -482,6 +500,23 @@ private:
         convertToUpper(value);
         return value == "TRUE";
     }
+
+    bool getCurrentShowVDDQ() {
+        const std::string section = isMiniMode ? "mini" : "micro";
+        std::string value = ult::parseValueFromIniSection(configIniPath, section, "show_vddq");
+        if (value.empty()) return false;
+        convertToUpper(value);
+        return value == "TRUE";
+    }
+
+    bool getCurrentShowVDD2() {
+        const std::string section = isMiniMode ? "mini" : "micro";
+        std::string value = ult::parseValueFromIniSection(configIniPath, section, "show_vdd2");
+        if (value.empty()) return true;
+        convertToUpper(value);
+        return value == "TRUE";
+    }
+
     
     bool getCurrentShowFullRes() {
         const std::string section = isMiniMode ? "mini" : "micro";
@@ -518,6 +553,13 @@ private:
     bool getCurrentDisableScreenshots(const std::string& section) {
         std::string value = ult::parseValueFromIniSection(configIniPath, section, "disable_screenshots");
         if (value.empty()) return false;  // Default is false (screenshots enabled)
+        convertToUpper(value);
+        return value != "FALSE";  // True if not explicitly "FALSE"
+    }
+
+    bool getCurrentSleepExit(const std::string& section) {
+        std::string value = ult::parseValueFromIniSection(configIniPath, section, "sleep_exit");
+        if (value.empty()) return false;
         convertToUpper(value);
         return value != "FALSE";  // True if not explicitly "FALSE"
     }

@@ -12,6 +12,13 @@
 #include <tesla.hpp>
 #include <sys/stat.h>
 
+// rgltr_services.cpp (no changes needed here—just compile it once)
+#include <switch.h>
+#include "rgltr.h"
+#include "rgltr_services.h"  // for extern Service g_rgltrSrv, etc.
+
+
+
 #if defined(__cplusplus)
 extern "C"
 {
@@ -474,9 +481,34 @@ void gpuLoadThread(void*) {
     } while(!leventWait(&threadexit, 16'666'000));
 }
 
+std::string getVersionString() {
+    char buf[0x100] = "";  // 256 bytes — safe for any expected version string
+    Result rc = sysclkIpcGetVersionString(buf, sizeof(buf));
+    if (R_FAILED(rc) || buf[0] == '\0') {
+        return "unknown";
+    }
+    return std::string(buf);
+}
+
+
+bool usingEOS() {
+    const std::string versionString = getVersionString();
+    return versionString.find("eos") != std::string::npos;
+}
+
+// === ULTRA-FAST VOLTAGE READING ===
+static constexpr PowerDomainId domains[] = {
+    PcvPowerDomainId_Max77621_Cpu,    // [0] CPU
+    PcvPowerDomainId_Max77621_Gpu,    // [1] GPU  
+    PcvPowerDomainId_Max77812_Dram,   // [2] VDD2 (EMC/DRAM)
+    PcvPowerDomainId_Max77620_Sd0,    // [3] SOC
+    PcvPowerDomainId_Max77620_Sd1     // [4] VDDQ
+};
+
 //Stuff that doesn't need multithreading
 void Misc(void*) {
     uint64_t timeout_ns = TeslaFPS < 10 ? (1'000'000'000 / TeslaFPS) : 100'000'000;
+    bool isUsingEOS = usingEOS();
     do {
         mutexLock(&mutex_Misc);
         // CPU, GPU and RAM Frequency
@@ -508,12 +540,50 @@ void Misc(void*) {
                 realRAM_Hz = sysclkCTX.realFreqs[SysClkModule_MEM];
                 ramLoad[SysClkRamLoad_All] = sysclkCTX.ramLoad[SysClkRamLoad_All];
                 ramLoad[SysClkRamLoad_Cpu] = sysclkCTX.ramLoad[SysClkRamLoad_Cpu];
-                realCPU_mV = sysclkCTX.realVolts[0]; 
-                realGPU_mV = sysclkCTX.realVolts[1]; 
-                realRAM_mV = sysclkCTX.realVolts[2]; 
-                realSOC_mV = sysclkCTX.realVolts[3]; 
+                if (isUsingEOS) {
+                    realCPU_mV = sysclkCTX.realVolts[0]; 
+                    realGPU_mV = sysclkCTX.realVolts[1]; 
+                    realRAM_mV = sysclkCTX.realVolts[2]; 
+                    realSOC_mV = sysclkCTX.realVolts[3];
+                }
             }
         }
+
+        if (!isUsingEOS) {
+            
+            u32* voltages[] = {&realCPU_mV, &realGPU_mV, nullptr, &realSOC_mV, nullptr};
+            u32 vdd2_raw = 0, vddq_raw = 0;  // Temporary storage for RAM voltages
+        
+            auto readVoltage = [&](int idx) {
+                RgltrSession session;
+                u32* target = voltages[idx];
+                if (idx == 2) target = &vddq_raw;     // VDD2 to temp
+                if (idx == 4) target = &vdd2_raw;     // VDDQ to temp
+                
+                if (R_SUCCEEDED(rgltrOpenSession(&session, domains[idx]))) {
+                    if (R_FAILED(rgltrGetVoltage(&session, target))) {
+                        *target = 0;
+                    }
+                    rgltrCloseSession(&session);
+                } else {
+                    *target = 0;
+                }
+            };
+            
+            if (R_SUCCEEDED(rgltrInitialize())) [[likely]] {
+                for (int i = 0; i < 5; ++i) {  // Read all 5 domains
+                    readVoltage(i);
+                }
+                
+                rgltrExit();
+                
+                // Pack VDD2 and VDDQ into realRAM_mV in sysclk format
+                const u32 vdd2_mV = vdd2_raw / 1000;  // µV to mV
+                const u32 vddq_mV = vddq_raw / 1000;  // µV to mV  
+                realRAM_mV = vdd2_mV * 100000 + vddq_mV *10;
+            }
+        }
+
         
         //Temperatures
         if (R_SUCCEEDED(i2cCheck)) {
@@ -598,6 +668,7 @@ void Misc2(void*) {
 
 void Misc3(void*) {
     double temp;
+    bool isUsingEOS = usingEOS();
     do {
         mutexLock(&mutex_Misc);
         if (R_SUCCEEDED(sysclkCheck)) {
@@ -606,12 +677,49 @@ void Misc3(void*) {
                 ramLoad[SysClkRamLoad_All] = sysclkCTX.ramLoad[SysClkRamLoad_All];
                 ramLoad[SysClkRamLoad_Cpu] = sysclkCTX.ramLoad[SysClkRamLoad_Cpu];
                 // Add voltage readings to Misc3 as well
-                realCPU_mV = sysclkCTX.realVolts[0]; 
-                realGPU_mV = sysclkCTX.realVolts[1]; 
-                realRAM_mV = sysclkCTX.realVolts[2]; 
-                realSOC_mV = sysclkCTX.realVolts[3];
+                if (isUsingEOS){
+                    realCPU_mV = sysclkCTX.realVolts[0]; 
+                    realGPU_mV = sysclkCTX.realVolts[1]; 
+                    realRAM_mV = sysclkCTX.realVolts[2]; 
+                    realSOC_mV = sysclkCTX.realVolts[3];
+                }
             }
         }
+
+        if (!isUsingEOS) {            
+            u32* voltages[] = {&realCPU_mV, &realGPU_mV, nullptr, &realSOC_mV, nullptr};
+            u32 vdd2_raw = 0, vddq_raw = 0;  // Temporary storage for RAM voltages
+        
+            auto readVoltage = [&](int idx) {
+                RgltrSession session;
+                u32* target = voltages[idx];
+                if (idx == 2) target = &vddq_raw;     // VDD2 to temp
+                if (idx == 4) target = &vdd2_raw;     // VDDQ to temp
+                
+                if (R_SUCCEEDED(rgltrOpenSession(&session, domains[idx]))) {
+                    if (R_FAILED(rgltrGetVoltage(&session, target))) {
+                        *target = 0;
+                    }
+                    rgltrCloseSession(&session);
+                } else {
+                    *target = 0;
+                }
+            };
+            
+            if (R_SUCCEEDED(rgltrInitialize())) [[likely]] {
+                for (int i = 0; i < 5; ++i) {  // Read all 5 domains
+                    readVoltage(i);
+                }
+                
+                rgltrExit();
+
+                // Pack VDD2 and VDDQ into realRAM_mV in sysclk format
+                const u32 vdd2_mV = vdd2_raw / 1000;  // µV to mV
+                const u32 vddq_mV = vddq_raw / 1000;  // µV to mV  
+                realRAM_mV = vdd2_mV * 100000 + vddq_mV *10;
+            }
+        }
+
         //Temperatures
         if (R_SUCCEEDED(i2cCheck)) {
             Tmp451GetSocTemp(&SOC_temperatureF);
@@ -1032,23 +1140,23 @@ void ParseIniFile() {
 
     // Handle external combo - load each file once
     const struct { const char* path; const char* section; } externalConfigs[] = {
-       {ultrahandConfigIniPath, "ultrahand"},
-       {teslaConfigIniPath, "tesla"}
+        {ultrahandConfigIniPath, "ultrahand"},
+        {teslaConfigIniPath, "tesla"}
     };
     
     for (const auto& config : externalConfigs) {
-       auto extConfigData = ult::getParsedDataFromIniFile(config.path);
-       auto sectionIt = extConfigData.find(config.section);
-       
-       if (sectionIt != extConfigData.end()) {
-           auto keyComboIt = sectionIt->second.find("key_combo");
-           if (keyComboIt != sectionIt->second.end() && !keyComboIt->second.empty()) {
-               keyCombo = keyComboIt->second;
-               removeSpaces(keyCombo);
-               convertToUpper(keyCombo);
-               break;
-           }
-       }
+        auto extConfigData = ult::getParsedDataFromIniFile(config.path);
+        auto sectionIt = extConfigData.find(config.section);
+        
+        if (sectionIt != extConfigData.end()) {
+            auto keyComboIt = sectionIt->second.find("key_combo");
+            if (keyComboIt != sectionIt->second.end() && !keyComboIt->second.empty()) {
+                keyCombo = keyComboIt->second;
+                removeSpaces(keyCombo);
+                convertToUpper(keyCombo);
+                break;
+            }
+        }
     }
     
     //comboBitmask = MapButtons(keyCombo);
@@ -1123,6 +1231,7 @@ struct MiniSettings {
     std::string show;
     bool showRAMLoad;
     bool disableScreenshots;
+    bool sleepExit;
     //int setPos;
     int frameOffsetX;
     int frameOffsetY;
@@ -1154,6 +1263,7 @@ struct MicroSettings {
     bool showRAMLoad;
     bool setPosBottom;
     bool disableScreenshots;
+    bool sleepExit;
 };
 
 struct FpsCounterSettings {
@@ -1219,6 +1329,7 @@ ALWAYS_INLINE void GetConfigSettings(MiniSettings* settings) {
     settings->showRAMLoad = true;
     settings->refreshRate = 1;
     settings->disableScreenshots = false;
+    settings->sleepExit = false;
     //settings->setPos = 0;
     settings->frameOffsetX = 10;
     settings->frameOffsetY = 10;
@@ -1417,6 +1528,14 @@ ALWAYS_INLINE void GetConfigSettings(MiniSettings* settings) {
         convertToUpper(key);
         settings->disableScreenshots = (key != "FALSE");
     }
+
+    // Process exit on sleep
+    it = section.find("sleep_exit");
+    if (it != section.end()) {
+        key = it->second;
+        convertToUpper(key);
+        settings->sleepExit = (key != "FALSE");
+    }
     
     // Process alignment settings
     //it = section.find("layer_width_align");
@@ -1482,6 +1601,7 @@ ALWAYS_INLINE void GetConfigSettings(MicroSettings* settings) {
     settings->showRAMLoad = true;
     settings->setPosBottom = false;
     settings->disableScreenshots = false;
+    settings->sleepExit = false;
     settings->refreshRate = 1;
 
     // Open and read file efficiently
@@ -1686,6 +1806,15 @@ ALWAYS_INLINE void GetConfigSettings(MicroSettings* settings) {
         convertToUpper(key);
         settings->disableScreenshots = (key != "FALSE");
     }
+
+    // Process exit on sleep
+    it = section.find("sleep_exit");
+    if (it != section.end()) {
+        key = it->second;
+        convertToUpper(key);
+        settings->sleepExit = (key != "FALSE");
+    }
+
 }
 
 ALWAYS_INLINE void GetConfigSettings(FpsCounterSettings* settings) {
