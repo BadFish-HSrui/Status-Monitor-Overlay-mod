@@ -314,7 +314,7 @@ public:
         if (!lastSelectedItem.empty())
             list->jumpToItem(lastSelectedItem);
 
-        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("性能监控", APP_VERSION);
+        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("性能监控", "葡萄糖酸菜鱼 汉化");
         rootFrame->setContent(list);
 
         return rootFrame;

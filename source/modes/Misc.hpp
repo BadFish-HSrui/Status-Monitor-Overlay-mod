@@ -28,7 +28,7 @@ private:
     char NVDEC_Hz_c[18];
     char NVENC_Hz_c[18];
     char NVJPG_Hz_c[18];
-    char Nifm_pass[96];
+    char Nifm_pass[192];
 public:
     MiscOverlay() { 
         disableJumpTo = true;
@@ -129,7 +129,7 @@ public:
         else {
             memcpy(&pass_temp1, &(Nifm_profile.wireless_setting_data.passphrase[0]), 24);
         }
-        snprintf(Nifm_pass, sizeof Nifm_pass, "%s\n%s\n%s", pass_temp1, pass_temp2, pass_temp3);
+        snprintf(Nifm_pass, sizeof Nifm_pass, "%s\n%s\n%s\n葡萄糖酸菜鱼 汉化", pass_temp1, pass_temp2, pass_temp3);
         
         static bool skipOnce = true;
     
