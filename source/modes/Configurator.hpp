@@ -425,7 +425,7 @@ public:
             });
             list->addItem(disableScreenshots);
 
-            auto* sleepExit = new tsl::elm::ToggleListItem("Sleep Exit", getCurrentSleepExit(section));
+            auto* sleepExit = new tsl::elm::ToggleListItem("休眠时退出", getCurrentSleepExit(section));
             sleepExit->setStateChangedListener([this, section](bool state) {
                 ult::setIniFileValue(configIniPath, section, "sleep_exit", state ? "true" : "false");
             });
