@@ -1423,24 +1423,24 @@ public:
                 }
             }
         } else if (isFullMode) {
-            auto* catColor1 = new tsl::elm::ListItem("类别颜色 1");
+            auto* catColor1 = new tsl::elm::ListItem("标题类别颜色");
             // Display color name for category colors
             catColor1->setValue(getColorName(getCurrentColor("cat_color_1", "#2DFF")));
             catColor1->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "类别颜色 1", "cat_color_1", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "标题类别颜色", "cat_color_1", "#2DFF");
                     return true;
                 }
                 return false;
             });
             list->addItem(catColor1);
 
-            auto* catColor2 = new tsl::elm::ListItem("类别颜色 2");
+            auto* catColor2 = new tsl::elm::ListItem("文本类别颜色");
             // Display color name for category colors
             catColor2->setValue(getColorName(getCurrentColor("cat_color_2", "#2DFF")));
             catColor2->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "类别颜色 2", "cat_color_2", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "文本类别颜色", "cat_color_2", "#2DFF");
                     return true;
                 }
                 return false;
@@ -1459,12 +1459,12 @@ public:
             });
             list->addItem(sepColor);
         } else if (isMiniMode) {
-            auto* catColor = new tsl::elm::ListItem("类别颜色");
+            auto* catColor = new tsl::elm::ListItem("文本颜色");
             // Display color name for category colors
             catColor->setValue(getColorName(getCurrentColor("cat_color", "#2DFF")));
             catColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "类别颜色", "cat_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "文本颜色", "cat_color", "#2DFF");
                     return true;
                 }
                 return false;
@@ -1484,11 +1484,11 @@ public:
             list->addItem(sepColor);
             
         } else if (isMicroMode) {
-            auto* catColor = new tsl::elm::ListItem("类别颜色");
+            auto* catColor = new tsl::elm::ListItem("文本颜色");
             catColor->setValue(getColorName(getCurrentColor("cat_color", "#2DFF")));
             catColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "类别颜色", "cat_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "文本颜色", "cat_color", "#2DFF");
                     return true;
                 }
                 return false;
@@ -1510,11 +1510,11 @@ public:
             
         } else if (isGameResolutionsMode) {
             // Game Resolutions: only category color (no separator)
-            auto* catColor = new tsl::elm::ListItem("类别颜色");
+            auto* catColor = new tsl::elm::ListItem("文本颜色");
             catColor->setValue(getColorName(getCurrentColor("cat_color", "#2DFF")));
             catColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "类别颜色", "cat_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "文本颜色", "cat_color", "#2DFF");
                     return true;
                 }
                 return false;
