@@ -233,7 +233,7 @@ public:
         
         // Handle default values
         if (currentValue.empty()) {
-            currentValue = isMiniMode ? "%m-%d-%Y%"+ult::DIVIDER_SYMBOL+"H:%M:%S" : "%H:%M:%S";
+            currentValue = isMiniMode ? "%m-%d-%Y"+ult::DIVIDER_SYMBOL+"%H:%M:%S" : "%H:%M:%S";
         }
         
         
@@ -315,6 +315,12 @@ public:
             });
             list->addItem(showInfo);
 
+            auto* dynamicColors = new tsl::elm::ToggleListItem("使用动态颜色", getCurrentUseDynamicColors());
+            dynamicColors->setStateChangedListener([this](bool state) {
+                ult::setIniFileValue(configIniPath, "fps-graph", "use_dynamic_colors", state ? "true" : "false");
+            });
+            list->addItem(dynamicColors);
+
             auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots("fps-graph"));
             disableScreenshots->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "fps-graph", "disable_screenshots", state ? "true" : "false");
@@ -358,6 +364,12 @@ public:
                 ult::setIniFileValue(configIniPath, "full", "show_read_speed", state ? "true" : "false");
             });
             list->addItem(showRDSD);
+
+            auto* dynamicColors = new tsl::elm::ToggleListItem("使用动态颜色", getCurrentUseDynamicColors());
+            dynamicColors->setStateChangedListener([this](bool state) {
+                ult::setIniFileValue(configIniPath, "fps-graph", "use_dynamic_colors", state ? "true" : "false");
+            });
+            list->addItem(dynamicColors);
 
             auto* disableScreenshots = new tsl::elm::ToggleListItem("禁用截图", getCurrentDisableScreenshots("full"));
             disableScreenshots->setStateChangedListener([this](bool state) {
@@ -417,6 +429,14 @@ public:
                     ult::setIniFileValue(configIniPath, section, "show_RAM_load_CPU_GPU", state ? "true" : "false");
                 });
                 list->addItem(ramLoadCPUGPU);
+            }
+
+            if (isMiniMode || isMicroMode) {
+                auto* invertBatteryDisplay = new tsl::elm::ToggleListItem("Invert Battery Display", getCurrentInvertBatteryDisplay());
+                invertBatteryDisplay->setStateChangedListener([this, section](bool state) {
+                    ult::setIniFileValue(configIniPath, section, "invert_battery_display", state ? "true" : "false");
+                });
+                list->addItem(invertBatteryDisplay);
             }
             
             auto* dtcSymbol = new tsl::elm::ToggleListItem("使用时间符号", getCurrentUseDTCSymbol());
@@ -535,7 +555,7 @@ private:
     bool getCurrentShowFullRes() {
         const std::string section = isMiniMode ? "mini" : "micro";
         std::string value = ult::parseValueFromIniSection(configIniPath, section, "show_full_res");
-        if (value.empty()) return isMiniMode; // Default: true for mini, false for micro
+        if (value.empty()) return true; // Default: true for mini, false for micro
         convertToUpper(value);
         return value != "FALSE";
     }
@@ -543,7 +563,7 @@ private:
     bool getCurrentShowSOCVoltage() {
         const std::string section = isMiniMode ? "mini" : "micro";
         std::string value = ult::parseValueFromIniSection(configIniPath, section, "show_soc_voltage");
-        if (value.empty()) return !isMiniMode; // Default: false for mini, true for micro
+        if (value.empty()) return false; // Default: false for mini, true for micro
         convertToUpper(value);
         return value != "FALSE";
     }
@@ -551,7 +571,15 @@ private:
     bool getCurrentShowRAMLoadCPUGPU() {
         const std::string section = isMiniMode ? "mini" : "micro";
         std::string value = ult::parseValueFromIniSection(configIniPath, section, "show_RAM_load_CPU_GPU");
-        if (value.empty()) return !isMiniMode; // Default: false for mini, true for micro
+        if (value.empty()) return false; // Default: false for mini, true for micro
+        convertToUpper(value);
+        return value != "FALSE";
+    }
+
+    bool getCurrentInvertBatteryDisplay() {
+        const std::string section = isMiniMode ? "mini" : "micro";
+        std::string value = ult::parseValueFromIniSection(configIniPath, section, "invert_battery_display");
+        if (value.empty()) return isMiniMode ? true : false; // Default: false for mini, true for micro
         convertToUpper(value);
         return value != "FALSE";
     }
@@ -565,7 +593,7 @@ private:
     }
 
     bool getCurrentUseDynamicColors() {
-        const std::string section = isMiniMode ? "mini" : "micro";
+        const std::string section = isFPSGraphMode? "fps-graph" : (isMiniMode ? "mini" : "micro");
         std::string value = ult::parseValueFromIniSection(configIniPath, section, "use_dynamic_colors");
         if (value.empty()) return true;
         convertToUpper(value);
@@ -1376,20 +1404,32 @@ public:
                 bool isBackgroundType;  // true for colors that allow alpha adjustment
             };
             
+            // Game Resolutions: only category color (no separator)
+            auto* catColor = new tsl::elm::ListItem("Category Color");
+            catColor->setValue(getColorName(getCurrentColor("cat_color", "#0F0F")));
+            catColor->setClickListener([this](uint64_t keys) {
+                if (keys & KEY_A) {
+                    tsl::changeTo<ColorSelector>(modeName, "Category Color", "cat_color", "#0F0F");
+                    return true;
+                }
+                return false;
+            });
+            list->addItem(catColor);
+
             static const std::vector<ColorSetting> fpsGraphColors = {
                 {"FPS计数器", "fps_counter_color", "#888C", true},      // background type
-                {"边框", "border_color", "#F00F", false},               // text type
+                {"边框", "border_color", "#2DFF", false},               // text type
                 {"虚线", "dashed_line_color", "#8888", true},      // background type
                 {"最大FPS文本", "max_fps_text_color", "#FFFF", false},   // text type
                 {"最小FPS文本", "min_fps_text_color", "#FFFF", false},   // text type
-                {"主线", "main_line_color", "#FFFF", false},         // text type
+                {"分割线", "main_line_color", "#FFFF", false},         // text type
                 {"圆角线", "rounded_line_color", "#F0FF", false},   // text type
                 {"完美线", "perfect_line_color", "#0C0F", false}    // text type
             };
             
             for (const auto& color : fpsGraphColors) {
                 auto* colorItem = new tsl::elm::ListItem(color.name + "颜色");
-                std::string currentVal = getCurrentColor(color.key, color.defaultVal);
+                const std::string currentVal = getCurrentColor(color.key, color.defaultVal);
                 
                 if (color.isBackgroundType) {
                     // For background-type colors, show color name
@@ -1422,13 +1462,14 @@ public:
                     list->addItem(alphaItem);
                 }
             }
+
         } else if (isFullMode) {
             auto* catColor1 = new tsl::elm::ListItem("标题类别颜色");
             // Display color name for category colors
-            catColor1->setValue(getColorName(getCurrentColor("cat_color_1", "#2DFF")));
+            catColor1->setValue(getColorName(getCurrentColor("cat_color_1", "#8FFF")));
             catColor1->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "标题类别颜色", "cat_color_1", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "标题类别颜色", "cat_color_1", "#8FFF");
                     return true;
                 }
                 return false;
@@ -1449,10 +1490,10 @@ public:
     
             auto* sepColor = new tsl::elm::ListItem("分隔符颜色");
             // Display color name for separator colors
-            sepColor->setValue(getColorName(getCurrentColor("separator_color", "#2DFF")));
+            sepColor->setValue(getColorName(getCurrentColor("separator_color", "#888F")));
             sepColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#888F");
                     return true;
                 }
                 return false;
@@ -1473,10 +1514,10 @@ public:
     
             auto* sepColor = new tsl::elm::ListItem("分隔符颜色");
             // Display color name for separator colors
-            sepColor->setValue(getColorName(getCurrentColor("separator_color", "#2DFF")));
+            sepColor->setValue(getColorName(getCurrentColor("separator_color", "#888F")));
             sepColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#888F");
                     return true;
                 }
                 return false;
@@ -1497,10 +1538,10 @@ public:
             
             // Micro mode: separator and category colors (no focus background like Mini)
             auto* sepColor = new tsl::elm::ListItem("分隔符颜色");
-            sepColor->setValue(getColorName(getCurrentColor("separator_color", "#2DFF")));
+            sepColor->setValue(getColorName(getCurrentColor("separator_color", "#888F")));
             sepColor->setClickListener([this](uint64_t keys) {
                 if (keys & KEY_A) {
-                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#2DFF");
+                    tsl::changeTo<ColorSelector>(modeName, "分隔符颜色", "separator_color", "#888F");
                     return true;
                 }
                 return false;
