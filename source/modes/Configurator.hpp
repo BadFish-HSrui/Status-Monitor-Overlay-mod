@@ -432,7 +432,7 @@ public:
             }
 
             if (isMiniMode || isMicroMode) {
-                auto* invertBatteryDisplay = new tsl::elm::ToggleListItem("Invert Battery Display", getCurrentInvertBatteryDisplay());
+                auto* invertBatteryDisplay = new tsl::elm::ToggleListItem("调整电池信息顺序", getCurrentInvertBatteryDisplay());
                 invertBatteryDisplay->setStateChangedListener([this, section](bool state) {
                     ult::setIniFileValue(configIniPath, section, "invert_battery_display", state ? "true" : "false");
                 });
