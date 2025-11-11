@@ -454,9 +454,9 @@ public:
                 RAM_GPU_Load / 10, RAM_GPU_Load % 10);
         }
         ///Thermal
-        snprintf(SOC_temperature_c, sizeof SOC_temperature_c, "%.1f\u00B0C", SOC_temperatureF);
-        snprintf(PCB_temperature_c, sizeof PCB_temperature_c, "%.1f\u00B0C", PCB_temperatureF);
-        snprintf(skin_temperature_c, sizeof skin_temperature_c, "%d.%d\u00B0C", skin_temperaturemiliC / 1000, (skin_temperaturemiliC / 100) % 10);
+        snprintf(SOC_temperature_c, sizeof SOC_temperature_c, "%.1f℃", SOC_temperatureF);
+        snprintf(PCB_temperature_c, sizeof PCB_temperature_c, "%.1f℃", PCB_temperatureF);
+        snprintf(skin_temperature_c, sizeof skin_temperature_c, "%d.%d℃", skin_temperaturemiliC / 1000, (skin_temperaturemiliC / 100) % 10);
 
         snprintf(Rotation_SpeedLevel_c, sizeof Rotation_SpeedLevel_c, "%.1f%%", Rotation_Duty);
         

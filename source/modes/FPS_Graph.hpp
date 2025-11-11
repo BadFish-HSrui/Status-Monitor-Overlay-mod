@@ -75,7 +75,7 @@ public:
             com_FPSGraph* overlay = static_cast<com_FPSGraph*>(arg);
             
             // Allow only Player 1 and handheld mode
-            HidNpadIdType id_list[2] = { HidNpadIdType_No1, HidNpadIdType_Handheld };
+            const HidNpadIdType id_list[2] = { HidNpadIdType_No1, HidNpadIdType_Handheld };
             
             // Configure HID system to only listen to these IDs
             hidSetSupportedNpadIdType(id_list, 2);
@@ -392,7 +392,7 @@ public:
                 renderer->drawString(PCB_TEMP_c, false, value_x, startY + lineHeight * 4+4*SPACING, fontSize, pcbColor);
                 
                 // Line 5: SKIN (with gradient color)
-                renderer->drawString("SKIN", false, info_x, startY + lineHeight * 5+5*SPACING, fontSize, settings.catColor);
+                renderer->drawString("Skin", false, info_x, startY + lineHeight * 5+5*SPACING, fontSize, settings.catColor);
                 renderer->drawString(SKIN_TEMP_c, false, value_x, startY + lineHeight * 5+5*SPACING, fontSize, skinColor);
             }
         });
@@ -447,9 +447,9 @@ public:
         mutexLock(&mutex_Misc);
         
         // Format temperature strings separately for proper alignment
-        snprintf(SOC_TEMP_c, sizeof SOC_TEMP_c, "%2.1f\u00B0C", SOC_temperatureF);
-        snprintf(PCB_TEMP_c, sizeof PCB_TEMP_c, "%2.1f\u00B0C", PCB_temperatureF);
-        snprintf(SKIN_TEMP_c, sizeof SKIN_TEMP_c, "%2d.%d\u00B0C", 
+        snprintf(SOC_TEMP_c, sizeof SOC_TEMP_c, "%2.1f℃", SOC_temperatureF);
+        snprintf(PCB_TEMP_c, sizeof PCB_TEMP_c, "%2.1f℃", PCB_temperatureF);
+        snprintf(SKIN_TEMP_c, sizeof SKIN_TEMP_c, "%2d.%d℃", 
                  skin_temperaturemiliC / 1000, (skin_temperaturemiliC / 100) % 10);
         
         // Atomically snapshot each idle tick once
