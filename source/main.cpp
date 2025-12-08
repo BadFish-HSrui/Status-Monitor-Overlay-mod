@@ -929,9 +929,22 @@ bool checkOverlayFile(const std::string& filename) {
 }
 
 // Helper function to setup micro mode paths
-void setupMode() {
-    ult::DefaultFramebufferWidth = 1280;
-    ult::DefaultFramebufferHeight = 720;
+inline void setupMode(const std::string& modeType = "") {
+
+    if (modeType == "micro") {
+        if (!ult::limitedMemory) {
+            ult::DefaultFramebufferWidth = 1280;
+            ult::DefaultFramebufferHeight = 720;
+        } else {
+            ult::DefaultFramebufferWidth = 1280;
+            ult::DefaultFramebufferHeight = 28;
+        }
+    } else {
+        if (!ult::limitedMemory) {
+            ult::DefaultFramebufferWidth = 1280;
+            ult::DefaultFramebufferHeight = 720;
+        }
+    }
 
     // Try user-specified filename first, then fallback to default
     const std::string primaryPath = folderpath + filename;
@@ -967,6 +980,40 @@ void setupMode() {
 
 // This function gets called on startup to create a new Overlay object
 int main(int argc, char **argv) {
+
+    // load heap settings outside of loop (only Status Monitor directive)
+    ult::currentHeapSize = ult::getCurrentHeapSize();
+    ult::expandedMemory = ult::currentHeapSize >= ult::OverlayHeapSize::Size_8MB;
+    ult::limitedMemory = ult::currentHeapSize == ult::OverlayHeapSize::Size_4MB;
+    
+    
+    // Initialize buffer sizes based on expanded memory setting
+    if (ult::expandedMemory) {
+        ult::furtherExpandedMemory = ult::currentHeapSize > ult::OverlayHeapSize::Size_8MB;
+        
+        if (!ult::furtherExpandedMemory) {
+            ult::loaderTitle += "+";
+            ult::COPY_BUFFER_SIZE = 262144;
+            ult::HEX_BUFFER_SIZE = 8192;
+            ult::UNZIP_READ_BUFFER = 262144;
+            ult::UNZIP_WRITE_BUFFER = 131072;
+            ult::DOWNLOAD_READ_BUFFER = 131072;
+            ult::DOWNLOAD_WRITE_BUFFER = 131072;
+        } else {
+            ult::loaderTitle += "×";
+            ult::COPY_BUFFER_SIZE = 262144*2;
+            ult::HEX_BUFFER_SIZE = 8192;
+            ult::UNZIP_READ_BUFFER = 262144*2;
+            ult::UNZIP_WRITE_BUFFER = 131072*4;
+            ult::DOWNLOAD_READ_BUFFER = 131072*4;
+            ult::DOWNLOAD_WRITE_BUFFER = 131072*4;
+        }
+    } else if (ult::limitedMemory) {
+        ult::loaderTitle += "-";
+        ult::DOWNLOAD_READ_BUFFER = 16*1024;
+        ult::UNZIP_READ_BUFFER = 16*1024;
+    }
+    
     systemtickfrequency = armGetSystemTickFreq();
     ParseIniFile(); // parse INI from file
     
@@ -1022,11 +1069,17 @@ int main(int argc, char **argv) {
                 FullMode = false;
                 lastMode = "micro";
                 if (hasUnderscore) {
-                    setupMode();
+                    setupMode(lastMode);
                 } else {
                     skipMain = true;
-                    ult::DefaultFramebufferWidth = 1280;
-                    ult::DefaultFramebufferHeight = 720;
+
+                    if (!ult::limitedMemory) {
+                        ult::DefaultFramebufferWidth = 1280;
+                        ult::DefaultFramebufferHeight = 720;
+                    } else {
+                        ult::DefaultFramebufferWidth = 1280;
+                        ult::DefaultFramebufferHeight = 28;
+                    }
                 }
                 return tsl::loop<MicroMode>(argc, argv);
             }
@@ -1038,8 +1091,10 @@ int main(int argc, char **argv) {
                     setupMode();
                 } else {
                     skipMain = true;
-                    ult::DefaultFramebufferWidth = 1280;
-                    ult::DefaultFramebufferHeight = 720;
+                    if (!ult::limitedMemory) {
+                        ult::DefaultFramebufferWidth = 1280;
+                        ult::DefaultFramebufferHeight = 720;
+                    }
                 }
                 return tsl::loop<MiniEntryOverlay>(argc, argv);
             }
@@ -1051,8 +1106,10 @@ int main(int argc, char **argv) {
                     setupMode();
                 } else {
                     skipMain = true;
-                    ult::DefaultFramebufferWidth = 1280;
-                    ult::DefaultFramebufferHeight = 720;
+                    if (!ult::limitedMemory) {
+                        ult::DefaultFramebufferWidth = 1280;
+                        ult::DefaultFramebufferHeight = 720;
+                    }
                 }
                 return tsl::loop<FPSGraphEntryOverlay>(argc, argv);
             }
@@ -1064,8 +1121,10 @@ int main(int argc, char **argv) {
                     setupMode();
                 } else {
                     skipMain = true;
-                    ult::DefaultFramebufferWidth = 1280;
-                    ult::DefaultFramebufferHeight = 720;
+                    if (!ult::limitedMemory) {
+                        ult::DefaultFramebufferWidth = 1280;
+                        ult::DefaultFramebufferHeight = 720;
+                    }
                 }
                 return tsl::loop<FPSCounterEntryOverlay>(argc, argv);
             }
@@ -1077,8 +1136,10 @@ int main(int argc, char **argv) {
                     setupMode();
                 } else {
                     skipMain = true;
-                    ult::DefaultFramebufferWidth = 1280;
-                    ult::DefaultFramebufferHeight = 720;
+                    if (!ult::limitedMemory) {
+                        ult::DefaultFramebufferWidth = 1280;
+                        ult::DefaultFramebufferHeight = 720;
+                    }
                 }
                 return tsl::loop<GameResolutionsEntryOverlay>(argc, argv);
             }
@@ -1100,7 +1161,7 @@ int main(int argc, char **argv) {
                     lastSelectedItem += token;
                     
                     // Stop if token ends with quote
-                    char lastChar = token[strlen(token) - 1];
+                    const char lastChar = token[strlen(token) - 1];
                     if (lastChar == '"' || lastChar == '\'') {
                         ++arg;
                         break;

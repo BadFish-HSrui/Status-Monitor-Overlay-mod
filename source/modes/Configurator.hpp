@@ -473,7 +473,7 @@ public:
             
         } else if (isFPSCounterMode) {
             // FPS Counter mode: only disable_screenshots
-            auto* integerCounter = new tsl::elm::ToggleListItem("显示整数帧数", getCurrentUseIntegerCounter("use_integer_counter"));
+            auto* integerCounter = new tsl::elm::ToggleListItem("显示整数帧数", getCurrentUseIntegerCounter("fps-counter"));
             integerCounter->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "fps-counter", "use_integer_counter", state ? "true" : "false");
             });
@@ -513,7 +513,7 @@ private:
     // Helper methods for getting current toggle states
     bool getCurrentShowInfo() {
         std::string value = ult::parseValueFromIniSection(configIniPath, "fps-graph", "show_info");
-        if (value.empty()) return false;
+        if (value.empty()) return true;
         convertToUpper(value);
         return value == "TRUE";
     }
@@ -1659,7 +1659,9 @@ public:
             }
         }
         
-        static const std::vector<std::string> allElements = {"DTC", "BAT", "CPU", "GPU", "RAM", "TMP", "FPS", "RES", "SOC", "READ"};
+        static constexpr std::string_view allElements[] = {
+            "DTC","BAT","CPU","GPU","RAM","MEM","READ","SOC","TMP","FPS","RES"
+        };
         
         // 定义元素的中文显示名称
         static const std::map<std::string, std::string> elementDisplayNames = {
@@ -1672,12 +1674,20 @@ public:
             {"FPS", "帧率"},
             {"RES", "分辨率"},
             {"SOC", "核心温度"},
-            {"READ", "读取速度"}
+            {"READ", "读取速度"},
+            {"MEM", "空闲内存"}
         };
         
-        for (const std::string& element : allElements) {
-            if (std::find(elementOrder.begin(), elementOrder.end(), element) == elementOrder.end()) {
-                elementOrder.push_back(element);
+        auto exists = [&](std::string_view s) {
+            return std::find(elementOrder.begin(), elementOrder.end(), s) != elementOrder.end();
+        };
+        
+        for (auto elem : allElements) {
+            if (!isMiniMode && elem == "MEM")
+                continue;
+        
+            if (!exists(elem)) {
+                elementOrder.emplace_back(elem);
             }
         }
         

@@ -115,10 +115,12 @@ public:
             fontsize = settings.handheldFontSize;
         }
         else fontsize = settings.dockedFontSize;
-        //if (settings.setPosBottom) {
-        //    const auto [horizontalUnderscanPixels, verticalUnderscanPixels] = tsl::gfx::getUnderscanPixels();
-        //    tsl::gfx::Renderer::get().setLayerPos(0, !verticalUnderscanPixels ? 1038 : 1038- (tsl::cfg::ScreenHeight/720. * verticalUnderscanPixels) +0.5);
-        //}
+
+        if (ult::limitedMemory && settings.setPosBottom) {
+            const auto [horizontalUnderscanPixels, verticalUnderscanPixels] = tsl::gfx::getUnderscanPixels();
+            tsl::gfx::Renderer::get().setLayerPos(0, !verticalUnderscanPixels ? 1038 : 1038- (tsl::cfg::ScreenHeight/720. * verticalUnderscanPixels) +0.5);
+        }
+
         if (settings.disableScreenshots) {
             tsl::gfx::Renderer::get().removeScreenshotStacks();
         }
@@ -129,6 +131,7 @@ public:
         FullMode = false;
         //alphabackground = 0x0;
         deactivateOriginalFooter = true;
+        StartThreads();
         
         // Pre-allocate render items vector
         //renderItems.reserve(8);
@@ -191,7 +194,7 @@ public:
                      drawW);
         }
 
-        StartThreads();
+        
     }
     
     ~MicroOverlay() {
