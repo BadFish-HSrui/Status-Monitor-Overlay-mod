@@ -129,8 +129,10 @@ public:
         //}
         //tsl::elm::g_disableMenuCacheOnReturn.store(true, std::memory_order_release);
         tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("性能监控", APP_VERSION);
-        if (!lastSelectedItem.empty())
+        if (!lastSelectedItem.empty()) {
             list->jumpToItem(lastSelectedItem);
+        }
+        lastSelectedItem = "Other";
 
         rootFrame->setContent(list);
 
@@ -156,7 +158,7 @@ public:
         }
 
         if (keysDown & KEY_B) {
-            lastSelectedItem = "Other";
+            
             tsl::swapTo<MainMenu>();
             triggerRumbleDoubleClick.store(true, std::memory_order_release);
             triggerExitSound.store(true, std::memory_order_release);
@@ -367,8 +369,11 @@ public:
         });
         list->addItem(Other);
 
-        if (!lastSelectedItem.empty())
+        if (!lastSelectedItem.empty()) {
             list->jumpToItem(lastSelectedItem);
+            lastSelectedItem = "";
+        }
+
 
         //list->disableCaching();
         tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("性能监控", "葡萄糖酸菜鱼 汉化");
